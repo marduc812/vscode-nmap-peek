@@ -1,8 +1,16 @@
 {
   "name": "nmap-peek",
-  "displayName": "nmap-peek",
-  "description": "view nmap output",
-  "version": "0.0.1",
+  "displayName": "Nmap Peek",
+  "description": "View nmap output",
+  "version": "1.0.0",
+  "author": {
+    "name": "marduc812"
+  },
+  "homepage": "https://github.com/marduc812/vscode-nmap-peek/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marduc812/vscode-nmap-peek.git"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
