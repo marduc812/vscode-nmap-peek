@@ -3,6 +3,7 @@
   "displayName": "Nmap Peek",
   "description": "View nmap output",
   "version": "1.0.0",
+  "icon": "resources/neutral/nmap-peek-logo.png",
   "author": {
     "name": "marduc812"
   },
@@ -14,6 +15,7 @@
   "engines": {
     "vscode": "^1.74.0"
   },
+  "publisher": "marduc812",
   "categories": [
     "Other"
   ],
