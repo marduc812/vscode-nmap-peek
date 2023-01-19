@@ -1,8 +1,8 @@
 {
   "name": "nmap-peek",
   "displayName": "Nmap Peek",
-  "description": "View nmap output",
-  "version": "1.0.0",
+  "description": "View your nmap output inside VS Code, in a nice clean GUI",
+  "version": "1.0.1",
   "icon": "resources/neutral/nmap-peek-logo.png",
   "author": {
     "name": "marduc812"

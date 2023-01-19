@@ -12,13 +12,18 @@ The status of each port, is represented with different colors. `Green` for `open
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+The application is using `fast-xml-parser` for parsing the XML content of nmap. 
 
 ## Known Issues
 
 No issues at the moment
 
 ## Release Notes
+
+### 1.0.1
+
+Updated needed license information and missing icons.
+
 ### 1.0.0
 
 Initial release of nmap peek.
