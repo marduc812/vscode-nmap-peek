@@ -20,6 +20,10 @@ No issues at the moment
 
 ## Release Notes
 
+### 1.0.2
+
+Improved error handling.
+
 ### 1.0.1
 
 Updated needed license information and missing icons.

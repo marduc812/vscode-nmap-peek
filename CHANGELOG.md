@@ -8,3 +8,7 @@
 
 - Added MIT license
 - Update missing icons etc.
+
+## [1.0.2] - 29.01.2023
+
+- Added better error handling
