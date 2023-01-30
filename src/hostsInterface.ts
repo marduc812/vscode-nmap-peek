@@ -25,8 +25,7 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 
     // currently returns an empty promise
 	getChildren(element?: Host): Thenable<any[]> {
-			
-		console.log(this.inputJsonNmap);
+		
 		
 		if (!this.inputJsonNmap) {
 			vscode.window.showInformationMessage('No host found in nmap file');
@@ -91,19 +90,20 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 				const hostState = host.status["@_state"];
 				let hostPorts = [];
 	
-				if (host.ports.port.length) {
+				if (host.ports && host.ports.port && host.ports.port.length) {
 					hostPorts = host.ports.port.map((port: { [x: string]: any; state: { [x: string]: any; }; service: { [x: string]: any; }; }) => {
 						const portNumber = port["@_portid"];
 						const protocol = port["@_protocol"];
 						const portStatus = port.state["@_state"];
-						const portName = port.service["@_name"];
-						const portInfo = port.service["@_product"];
-						const portVersion = port.service["@_version"];
-						hostOs = port.service["@_ostype"];
+						const portName = port.service && port.service["@_name"] ? port.service["@_name"] : '';
+						const portInfo = port.service && port.service["@_product"] ? port.service["@_product"] : '';
+						const portVersion = port.service && port.service["@_version"] ? port.service["@_version"] : '';
+						if (port.service && port.service["@_ostype"]) {
+							hostOs = port.service["@_ostype"];
+						}
 						return new Port(portNumber,protocol, portStatus,portName, portInfo, portVersion, vscode.TreeItemCollapsibleState.None);
 					});
 				} else {
-					console.log('here')
 					return;
 				}
 				return new Host(hostIP,hostName,hostState,hostPorts, hostOs, vscode.TreeItemCollapsibleState.Collapsed);
@@ -111,21 +111,26 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 		} else {
 		// Only one host, so the object is different
 			const hostIP = jsonNmap.host.address["@_addr"];
-			const hostName = jsonNmap.host.hostnames && jsonNmap.host.hostnames.hostname ? ` (${jsonNmap.host.hostnames.hostname["@_name"]})` : "";
+			let hostName = "";
+			if (jsonNmap.host.hostnames.hostname["@_name"]) {
+				hostName = ` (${jsonNmap.host.hostnames.hostname["@_name"]})`;
+			}
 			const hostState = jsonNmap.host.status["@_state"];
 			
 			let hostPorts = [];
 			
 			// many ports
-			if (jsonNmap.host.ports.port && jsonNmap.host.ports.port.length) {
+			if (jsonNmap.host.ports && jsonNmap.host.ports.port && jsonNmap.host.ports.port.length) {
 				hostPorts = jsonNmap.host.ports.port.map((port: { [x: string]: any; state: { [x: string]: any; }; service: { [x: string]: any; }; }) => {
 					const portNumber = port["@_portid"];
 					const protocol = port["@_protocol"];
 					const portStatus = port.state["@_state"];
-					const portName = port.service["@_name"];
-					const portInfo = port.service["@_product"];
-					const portVersion = port.service["@_version"];
-					hostOs = port.service["@_ostype"];
+					const portName = port.service && port.service["@_name"] ? port.service["@_name"] : '';
+					const portInfo = port.service && port.service["@_product"] ? port.service["@_product"] : '';
+					const portVersion = port.service && port.service["@_version"] ? port.service["@_version"] : '';
+					if (port.service && port.service["@_ostype"]) {
+						hostOs = port.service["@_ostype"];
+					}
 					return new Port(portNumber,protocol, portStatus,portName, portInfo, portVersion, vscode.TreeItemCollapsibleState.None);
 				});
 				hosts.push(new Host(hostIP,hostName,hostState,hostPorts, hostOs, vscode.TreeItemCollapsibleState.Collapsed));
@@ -213,8 +218,6 @@ export class Port extends vscode.TreeItem {
 		public readonly command?: vscode.Command
 	) {
 		super(`${portNumber}`, collapsibleState);
-
-		//console.log(`Number: ${portNumber}, Status: ${portStatus}, Verions: ${portName}, Protocol: ${protocol}, Port Info: ${portInfo}, Port Version: ${portversion}`);
 		
 		this.tooltip = ` ${this.protocol}`;
 		this.description = `${this.portName} ${this.portInfo} ${this.portversion}`;
