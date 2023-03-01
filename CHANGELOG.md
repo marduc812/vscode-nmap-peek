@@ -12,3 +12,8 @@
 ## [1.0.2] - 29.01.2023
 
 - Added better error handling
+
+## [1.0.3] - 01.03.2023
+
+- Fixed parsing bug when only one port was open
+- Code refactoring

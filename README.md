@@ -20,6 +20,11 @@ No issues at the moment
 
 ## Release Notes
 
+### 1.0.3
+
+Fixed bug in case a single port was open.
+Refactored code to avoid duplicate snippets
+
 ### 1.0.2
 
 Improved error handling.

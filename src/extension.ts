@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	const fileName = editor.document.fileName;
 	const fileExtension = path.extname(fileName).slice(1);
-	const nmapExtensions = ['xml', 'nmap', 'gnmap'];
+	const nmapExtensions = ['xml'];
 
 	if (nmapExtensions.includes(fileExtension)) {
 		const text = editor.document.getText();

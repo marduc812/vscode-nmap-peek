@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { XMLParser } from 'fast-xml-parser';
 
-// TBD: On hover show how many ports or the open ports
+
 
 export class HostProvider implements vscode.TreeDataProvider<Host> {
 
@@ -23,9 +23,7 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 		return element;
 	}
 
-    // currently returns an empty promise
 	getChildren(element?: Host): Thenable<any[]> {
-		
 		
 		if (!this.inputJsonNmap) {
 			vscode.window.showInformationMessage('No host found in nmap file');
@@ -50,24 +48,7 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
         } else {
             return Promise.resolve(this.getPortsFromHost(element.ports));
         }
-	}
-
-	private getJsonFromXml(xmlText: string): string {
-		const parsingOptions = {
-			ignoreAttributes : false,
-			ignoreNameSpace: false
-		};
-		const parser = new XMLParser(parsingOptions);
-		const jsonResult = parser.parse(xmlText);
-		
-		// verify that it's an nmap file and not a random xml
-		if (!jsonResult.nmaprun) {
-			vscode.window.showInformationMessage('Not a valid nmap file');
-			return "";
-		}
-
-		return jsonResult;
-	}
+	} 
 
 	private getNmapFromJson(jsonNmap: any): Host[] {
 		if (!jsonNmap) {
@@ -83,56 +64,56 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 		let hostOs = "";
 
 		// there are more than 1 hosts in nmap, so it's an array
-		if (jsonNmap.host.length) {
+		if (Array.isArray(jsonNmap.host)) {
 			hosts = jsonNmap.host.map((host: { address: { [x: string]: any; }; hostnames: { hostname: { [x: string]: any; }; }; status: { [x: string]: any; }; ports: { port: any[]; }; }) => {
-				const hostIP = host.address["@_addr"];
-				const hostName = host.hostnames && host.hostnames.hostname ? ` (${host.hostnames.hostname["@_name"]})` : "";
+				let hostIp = "";
+				if (host.address.length > 1) {
+					host.address.forEach((address: { [x: string]: any; }) => {
+						if (address["@_addrtype"] === "ipv4") {
+							hostIp = address["@_addr"];
+						}
+					});
+				} else {
+					hostIp = host.address["@_addr"];
+				}
+
+				const hostName = host.hostnames && host.hostnames.hostname && host.hostnames.hostname["@_name"] ? ` (${host.hostnames.hostname["@_name"]})` : "";
 				const hostState = host.status["@_state"];
 				let hostPorts = [];
 	
-				if (host.ports && host.ports.port && host.ports.port.length) {
-					hostPorts = host.ports.port.map((port: { [x: string]: any; state: { [x: string]: any; }; service: { [x: string]: any; }; }) => {
-						const portNumber = port["@_portid"];
-						const protocol = port["@_protocol"];
-						const portStatus = port.state["@_state"];
-						const portName = port.service && port.service["@_name"] ? port.service["@_name"] : '';
-						const portInfo = port.service && port.service["@_product"] ? port.service["@_product"] : '';
-						const portVersion = port.service && port.service["@_version"] ? port.service["@_version"] : '';
-						if (port.service && port.service["@_ostype"]) {
-							hostOs = port.service["@_ostype"];
-						}
-						return new Port(portNumber,protocol, portStatus,portName, portInfo, portVersion, vscode.TreeItemCollapsibleState.None);
-					});
+
+				// there are open ports
+				if (host.ports && host.ports.port) {
+					if (Array.isArray(host.ports.port)) {
+						hostPorts = host.ports.port.map(portFromHost);
+					} else {
+						hostPorts = [portFromHost(host.ports.port)];
+					}
 				} else {
 					return;
 				}
-				return new Host(hostIP,hostName,hostState,hostPorts, hostOs, vscode.TreeItemCollapsibleState.Collapsed);
+				return new Host(hostIp,hostName,hostState,hostPorts, hostOs, vscode.TreeItemCollapsibleState.Collapsed);
 			});
 		} else {
 		// Only one host, so the object is different
-			const hostIP = jsonNmap.host.address["@_addr"];
-			let hostName = "";
-			if (jsonNmap.host.hostnames.hostname["@_name"]) {
-				hostName = ` (${jsonNmap.host.hostnames.hostname["@_name"]})`;
-			}
+			const hostIP = jsonNmap.host.address[0]["@_addr"];
+			const hostName = jsonNmap.host.hostnames && jsonNmap.host.hostnames.hostname && jsonNmap.host.hostnames.hostname["@_name"] ? ` (${jsonNmap.host.hostnames.hostname["@_name"]})` : "";
+			// let hostName = "";
+			// if (jsonNmap.host.hostnames.hostname["@_name"]) {
+			// 	hostName = ` (${jsonNmap.host.hostnames.hostname["@_name"]})`;
+			// }
 			const hostState = jsonNmap.host.status["@_state"];
 			
 			let hostPorts = [];
 			
 			// many ports
-			if (jsonNmap.host.ports && jsonNmap.host.ports.port && jsonNmap.host.ports.port.length) {
-				hostPorts = jsonNmap.host.ports.port.map((port: { [x: string]: any; state: { [x: string]: any; }; service: { [x: string]: any; }; }) => {
-					const portNumber = port["@_portid"];
-					const protocol = port["@_protocol"];
-					const portStatus = port.state["@_state"];
-					const portName = port.service && port.service["@_name"] ? port.service["@_name"] : '';
-					const portInfo = port.service && port.service["@_product"] ? port.service["@_product"] : '';
-					const portVersion = port.service && port.service["@_version"] ? port.service["@_version"] : '';
-					if (port.service && port.service["@_ostype"]) {
-						hostOs = port.service["@_ostype"];
-					}
-					return new Port(portNumber,protocol, portStatus,portName, portInfo, portVersion, vscode.TreeItemCollapsibleState.None);
-				});
+			if (jsonNmap.host.ports && jsonNmap.host.ports.port) {
+
+				if (Array.isArray(jsonNmap.host.ports.port)) {
+					hostPorts = jsonNmap.host.ports.port.map(portFromHost);
+				} else {
+					hostPorts = [portFromHost(jsonNmap.host.ports.port)];
+				}
 				hosts.push(new Host(hostIP,hostName,hostState,hostPorts, hostOs, vscode.TreeItemCollapsibleState.Collapsed));
 			} else {
 				hosts.push(new Host(hostIP,hostName,hostState,[], hostOs, vscode.TreeItemCollapsibleState.Collapsed));
@@ -155,10 +136,23 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 					const portName = port.portName ? port.portName : "";
 					const portInfo = port.portInfo ? port.portInfo : "";
 					const portVersion = port.portVersion ? port.portInfo : "";
-					return new Port(portNumber,protocol ,portStatus,portName, portInfo, portVersion, vscode.TreeItemCollapsibleState.None);
+					const hostOs = port.hostOs ? port.hostOs : "";
+					return new Port(portNumber,protocol ,portStatus,portName, portInfo, portVersion, hostOs, vscode.TreeItemCollapsibleState.None);
 			});
 		return hostPorts;
 	}
+}
+
+// creates the port object
+const portFromHost = (hostPort: any) => {
+  const portNumber = hostPort["@_portid"];
+  const protocol = hostPort["@_protocol"];
+  const portStatus = hostPort.state["@_state"];
+  const portName = hostPort.service?.["@_name"] ?? '';
+  const portInfo = hostPort.service?.["@_product"] ?? '';
+  const portVersion = hostPort.service?.["@_version"] ?? '';
+  const hostOs = hostPort.service?.["@_ostype"] ?? '';
+  return new Port(portNumber,protocol, portStatus,portName, portInfo, portVersion, hostOs, vscode.TreeItemCollapsibleState.None);
 }
 
 export class Host extends vscode.TreeItem {
@@ -214,12 +208,15 @@ export class Port extends vscode.TreeItem {
 		public readonly portName: string, 
 		public readonly portInfo: string, 
 		public readonly portversion: string, 
+		public readonly hostOs: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		public readonly command?: vscode.Command
 	) {
 		super(`${portNumber}`, collapsibleState);
+
+		const tooltip = this.hostOs ? ` ${this.protocol} / ${this.hostOs}` : ` ${this.protocol}`;
 		
-		this.tooltip = ` ${this.protocol}`;
+		this.tooltip = tooltip;
 		this.description = `${this.portName} ${this.portInfo} ${this.portversion}`;
 
 		if (this.portStatus === 'open') 
