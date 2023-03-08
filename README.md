@@ -16,9 +16,16 @@ The application is using `fast-xml-parser` for parsing the XML content of nmap.
 
 ## Known Issues
 
-No issues at the moment
+In case you get an error `nmapViewer.refresh not found` after freshly installing the extension, you have to restart VS code.
+You can either close it and start it again, or press `ctrl/cmd` + `shift` + `p` and select `Developer: Reload Window`.
+After that, the extension will work as expected. 
 
 ## Release Notes
+
+### 1.0.4
+
+Fixed bug in single host nmap scans
+Parsing OS directly
 
 ### 1.0.3
 

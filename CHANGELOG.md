@@ -17,3 +17,8 @@
 
 - Fixed parsing bug when only one port was open
 - Code refactoring
+
+## [1.0.4] - 08.03.2023
+
+- Fixed parsing bug when only one host was open
+- Fixed OS detection bug

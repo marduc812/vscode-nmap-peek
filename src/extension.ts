@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Host, HostProvider } from './hostsInterface';
+import { HostProvider } from './hostsInterface';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { XMLParser } = require('fast-xml-parser');
 const path = require('path');
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		// verify that it's an nmap file and not a random xml
 		if (!jsonResult.nmaprun) {
-			vscode.window.showInformationMessage('Not a valid nmap file');
+			vscode.window.showInformationMessage('Not a valid nmap file, missing nmaprun tag');
 			return;
 		}
 
