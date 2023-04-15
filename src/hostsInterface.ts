@@ -2,8 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { XMLParser } from 'fast-xml-parser';
 
-
-
 export class HostProvider implements vscode.TreeDataProvider<Host> {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<Host | undefined | void> = new vscode.EventEmitter<Host | undefined | void>();
@@ -87,28 +85,32 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 				// <hostname name="hostname.local" type="PTR"/>
 				// </hostnames>
 				let hostName: string = "";
-				if (Array.isArray(host.hostnames.hostname)) {
-					// eslint-disable-next-line @typescript-eslint/naming-convention
-					host.hostnames.hostname.forEach((hostname: { '@_name': string, '@_type': string }) => {
-						if (hostName === "") {
-							hostName = hostname["@_name"];
-						} else {
-							if (hostname["@_name"] !== hostName) {
-								hostName = hostName + ", " + hostname["@_name"];
+				if (host.hostnames === undefined) {
+					hostName = "";
+				} else
+				{
+					if (Array.isArray(host.hostnames.hostname)) {
+						// eslint-disable-next-line @typescript-eslint/naming-convention
+						host.hostnames.hostname.forEach((hostname: { '@_name': string, '@_type': string }) => {
+							if (hostName === "") {
+								hostName = hostname["@_name"];
+							} else {
+								if (hostname["@_name"] !== hostName) {
+									hostName = hostName + ", " + hostname["@_name"];
+								}
 							}
-						}
-					});
-				} else {
-					hostName = host.hostnames && host.hostnames.hostname && host.hostnames.hostname["@_name"] ? ` (${host.hostnames.hostname["@_name"]})` : "";
+						});
+					} else {
+						hostName = host.hostnames && host.hostnames.hostname && host.hostnames.hostname["@_name"] ? ` (${host.hostnames.hostname["@_name"]})` : "";
+					}
 				}
-
+				
 
 				const hostState = host.status["@_state"];
 
 				hostOs = host.os && host.os.osmatch && host.os.osmatch.osclass && host.os.osmatch.osclass['@_type'] ? host.os.osmatch.osclass['@_type'] : "";
 
 				let hostPorts = [];
-
 
 				// there are open ports
 				if (host.ports && host.ports.port) {
@@ -125,9 +127,20 @@ export class HostProvider implements vscode.TreeDataProvider<Host> {
 			});
 		} else {
 			// Only one host, so the object is different
-			const hostIP = jsonNmap.host.address["@_addr"];
+			let hostIP = "";
+			if (jsonNmap.host.address.length > 1) {
+				jsonNmap.host.address.forEach((address: { [x: string]: any; }) => {
+					if (address["@_addrtype"] === "ipv4") {
+						hostIP = address["@_addr"];
+					}
+				});
+			} else {
+				hostIP = jsonNmap.host.address["@_addr"];
+			}
+
+			//const hostIP = jsonNmap.host.address["@_addr"];
 			const hostName = jsonNmap.host.hostnames && jsonNmap.host.hostnames.hostname && jsonNmap.host.hostnames.hostname["@_name"] ? ` (${jsonNmap.host.hostnames.hostname["@_name"]})` : "";
-			
+
 			const hostState = jsonNmap.host.status["@_state"];
 
 			hostOs = jsonNmap.host.os && jsonNmap.host.os.osmatch && jsonNmap.host.os.osmatch.osclass && jsonNmap.host.os.osmatch.osclass['@_type'] ? jsonNmap.host.os.osmatch.osclass['@_type'] : "";

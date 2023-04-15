@@ -4,6 +4,8 @@ import { HostProvider } from './hostsInterface';
 const { XMLParser } = require('fast-xml-parser');
 const path = require('path');
 
+let treeView: vscode.TreeView<any>;
+
 export function activate(context: vscode.ExtensionContext) {
 
 	const editor = vscode.window.activeTextEditor;
@@ -18,13 +20,13 @@ export function activate(context: vscode.ExtensionContext) {
 	if (nmapExtensions.includes(fileExtension)) {
 		const text = editor.document.getText();
 		const parsingOptions = {
-			ignoreAttributes : false,
+			ignoreAttributes: false,
 			ignoreNameSpace: false
 		};
 		const parser = new XMLParser(parsingOptions);
 		const jsonResult = parser.parse(text);
-		
-		
+
+
 		// verify that it's an nmap file and not a random xml
 		if (!jsonResult.nmaprun) {
 			vscode.window.showInformationMessage('Not a valid nmap file, missing nmaprun tag');
@@ -33,16 +35,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const hosts = jsonResult.nmaprun.host;
 		const hostProvider = new HostProvider(hosts);
-		vscode.window.registerTreeDataProvider('nmapViewer',hostProvider);
+		treeView = vscode.window.createTreeView('nmapViewer', { treeDataProvider: hostProvider });
+		vscode.window.registerTreeDataProvider('nmapViewer', hostProvider);
 		vscode.commands.registerCommand("nmapViewer.refresh", () =>
 			hostProvider.refresh()
-        );
+		);
 	}
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
 }
-
-
-//[undefined_publisher.nmap-peek]: View container 'package-explorer' does not exist and all views registered to it will be added to 'Explorer'.

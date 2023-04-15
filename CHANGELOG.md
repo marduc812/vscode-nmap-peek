@@ -22,3 +22,8 @@
 
 - Fixed parsing bug when only one host was open
 - Fixed OS detection bug
+
+## [1.0.5] - 15.04.2023
+
+- Fixed bug for host being offline
+- Fixed bug for single host, where no ip was shown

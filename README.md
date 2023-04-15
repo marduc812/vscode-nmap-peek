@@ -22,6 +22,11 @@ After that, the extension will work as expected.
 
 ## Release Notes
 
+### 1.0.5
+
+Fixed bug in single host nmap scans
+Fixed bug when host is offline
+
 ### 1.0.4
 
 Fixed bug in single host nmap scans
