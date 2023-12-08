@@ -1,0 +1,31 @@
+import React from 'react';
+import { ScanInfoType } from '../utilities/types';
+
+const ScanInfo = (props: { scanInfo: ScanInfoType }) => {
+
+  const type = props.scanInfo['@_type'] ? props.scanInfo['@_type'] : '-';
+  const protocol = props.scanInfo['@_protocol'] ? props.scanInfo['@_protocol'] : '-';
+  const ports = props.scanInfo['@_numservices'] ? props.scanInfo['@_numservices'] : '-';
+
+  return (
+    <div className='flex w-full flex-col'>
+      <h2 className='text-white font-bold ml-5 text-2xl mt-5'>Scan Info</h2>
+      <div className='flex flex-row w-full text-white justify-evenly'>
+        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
+        <p className='text-gray-400 cursor-default tooltip'>Type<span className="tooltiptext text-sm">Scan Type</span></p>
+          <p className='font-bold'>{type.toUpperCase()}</p>
+        </div>
+        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
+          <p className='text-gray-400 cursor-default tooltip'>Protocol<span className="tooltiptext text-sm">Scan Protocol</span></p>
+          <p className='font-bold'>{protocol.toUpperCase()}</p>
+        </div>
+        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
+        <p className='text-gray-400 cursor-default tooltip'>Scanned<span className="tooltiptext text-sm">Scanned Ports</span></p>
+          <p className='font-bold'>{ports.toUpperCase()}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ScanInfo;

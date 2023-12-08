@@ -1,0 +1,81 @@
+{
+  "name": "nmap-peek",
+  "displayName": "Nmap Peek",
+  "description": "View your nmap output inside VS Code, in a nice clean GUI",
+  "version": "1.0.6",
+  "icon": "resources/neutral/nmap-peek-logo.png",
+  "author": {
+    "name": "marduc812"
+  },
+  "homepage": "https://github.com/marduc812/vscode-nmap-peek/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marduc812/vscode-nmap-peek.git"
+  },
+  "publisher": "marduc812",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nmap-peek.visualize",
+        "title": "Visualize Nmap",
+        "category": "nmap",
+        "icon": {
+          "light": "resources/light/preview.svg",
+          "dark": "resources/dark/preview.svg"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "nmap-peek.visualize",
+          "when": "editorLangId == xml",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "install:all": "npm install && cd webview-ui && npm install",
+    "start:webview": "cd webview-ui && npm run start",
+    "build:webview": "cd webview-ui && npm run build",
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^18.19.3",
+    "@types/vscode": "^1.84.2",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.55.0",
+    "glob": "^10.3.10",
+    "prettier": "^3.1.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "vscode-test": "^1.6.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.3.2"
+  }
+}
