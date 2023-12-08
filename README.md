@@ -8,7 +8,14 @@ A simple side view of your XMl nmap file. The extensions prints all the basic in
 
 ![nmap peek](./media/preview.png)
 
-The status of each port, is represented with different colors. `Green` for `open`, `red` for `closed`, `light blue` for `filtered` and `gray` for `mixed responses` like closed|filtered etc. In case the ports disclose the OS of the host, a related icon will be presented. 
+## Display GUI
+
+When an `.xml` file is open on the editor, an icon of an eye will become visible on the toolbar.
+![nmap peek](./media/enable.png)
+
+It is possible to run the command directly without writting the command by opening the Command Palette (`Ctrl + Shift + P` or `command + Shift + P`). After run the `nmap: Visualize Nmap` command.
+
+The colors for port status are `green` dot for `open`, `red` for `closed`, `yellow` for `filtered` or `mixed response`.
 
 ## Requirements
 
@@ -16,11 +23,23 @@ The application is using `fast-xml-parser` for parsing the XML content of nmap.
 
 ## Known Issues
 
-In case you get an error `nmapViewer.refresh not found` after freshly installing the extension, you have to restart VS code.
-You can either close it and start it again, or press `ctrl/cmd` + `shift` + `p` and select `Developer: Reload Window`.
-After that, the extension will work as expected. 
+it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
+
+### 1.0.6
+
+Use latest version of `fast-xml-parser`
+Extension completely re-written to use `Webview` instead of `TreeView`
+New UI
+Search option added
+New action icon
+Diplays more Nmap fields like:
+- script output
+- preview scanned ports
+- Nmap scan info
+- MAC and IPv6 addresses
+- CPE information
 
 ### 1.0.5
 
