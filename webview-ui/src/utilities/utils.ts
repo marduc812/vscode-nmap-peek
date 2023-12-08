@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { HostAddressType, HostType, NmapRunType, PortScriptType, PortType, PortsType, ScanInfoType } from "./types";
+import { HostAddressType, HostType, HostnameType, NmapRunType, PortScriptType, PortType, PortsType, ScanInfoType } from "./types";
 
 /**
  * Returns the parsed XML content to itterate on each host
@@ -26,7 +26,7 @@ export const parseNmapScan = (nmapScan: string): NmapRunType | null => {
  * @param scanAddresses - Array of addresses and assigs each to it's category
  * @returns - returns values for each ipv4, ipv6 and mac address
  */
-export const getAddresses = (scanAddresses : HostAddressType[]) => {
+export const getAddresses = (scanAddresses: HostAddressType[]) => {
 
     let ipv4 = "";
     let mac = "";
@@ -42,7 +42,7 @@ export const getAddresses = (scanAddresses : HostAddressType[]) => {
         }
     });
 
-    return {ipv4: ipv4, ipv6: ipv6, mac: mac};
+    return { ipv4: ipv4, ipv6: ipv6, mac: mac };
 };
 
 
@@ -60,15 +60,28 @@ export const getHostnames = (scanHostnames: any): string => {
         hostnames = scanHostnames;
     }
 
-    let hostnamesList: string[] = [];
+    let hostnamesList = new Set();
     hostnames.forEach((hostname: any) => {
 
         if (typeof (hostname) === 'string') {
-            hostnamesList.push(hostname);
+            hostnamesList.add(hostname);
         } else {
             if (hostname.hostname['@_name']) {
-                hostnamesList.push(hostname.hostname['@_name']);
-            } else {
+                hostnamesList.add(hostname.hostname['@_name']);
+            } if (Array.isArray(hostname.hostname)) {
+                let hostnamesSet = new Set();
+                hostname.hostname.forEach((hostnameItem: HostnameType) => {
+                    hostnamesSet.add(hostnameItem['@_name']);
+                });
+
+                let hostnamesArray = Array.from(hostnamesSet);
+                if (hostnamesArray.length === 1) {
+                    hostnamesList.add(hostnamesArray[0]);
+                } else {
+                    hostnamesList.add(hostnamesArray.join(', '));
+                }
+            }
+            else {
                 console.log(hostname);
             }
         }
@@ -124,12 +137,20 @@ export const findOS = (scanHost: HostType): { vendor: string, family: string } =
     return { vendor, family };
 };
 
-
+/**
+ * Detectes the OS of the host based on service info
+ * @param ports - The ports object of the host
+ * @returns the OS or empty string if nothing was found.
+ */
 const getOSFromPorts = (ports: PortsType) => {
+    if (!ports || !ports.port) {
+        return '';
+    }
+
     const portsArray = Array.isArray(ports.port) ? ports.port : [ports.port];
 
     for (const port of portsArray) {
-        if (port.service?.["@_ostype"]) {
+        if (port && port.service && port.service["@_ostype"]) {
             return port.service["@_ostype"];
         }
     }
@@ -138,24 +159,26 @@ const getOSFromPorts = (ports: PortsType) => {
 };
 
 
+
+
 /**
  * Returns information from the scripts as a single string
  * @param scanScript 
  * @returns {in: string, out: string}[] - Object with in and out of script executions
  */
-export const getScripts = (scanScript: PortScriptType[]): {in: string, out: string}[] => {
+export const getScripts = (scanScript: PortScriptType[]): { in: string, out: string }[] => {
     if (scanScript === undefined) {
-        return [{in: "", out: ""}];
+        return [{ in: "", out: "" }];
     }
-    let scriptsArray: {in: string, out: string}[] = [];
+    let scriptsArray: { in: string, out: string }[] = [];
 
     if (Array.isArray(scanScript)) {
         scanScript.forEach((script: PortScriptType) => {
-            scriptsArray.push({in: script["@_id"], out: script["@_output"]});
+            scriptsArray.push({ in: script["@_id"], out: script["@_output"] });
         });
     } else if (typeof (scanScript) === 'object') {
         // there is single script
-        scriptsArray.push({in: scanScript["@_id"], out: scanScript["@_output"]});
+        scriptsArray.push({ in: scanScript["@_id"], out: scanScript["@_output"] });
     }
 
     return scriptsArray;
