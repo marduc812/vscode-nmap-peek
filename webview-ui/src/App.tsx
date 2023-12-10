@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import "./App.css";
 import MainView from './Components/MainView';
 import Footer from './Components/Footer';
-import { scan } from './utilities/test';
 
 function App() {
 

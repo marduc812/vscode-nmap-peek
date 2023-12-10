@@ -28,7 +28,7 @@
 - Fixed bug for host being offline
 - Fixed bug for single host, where no ip was shown
 
-## [1.0.6] - 08.12.2023
+## [2.0.0] - 10.12.2023
 
 - Massive rewrite of the code
 - Uses `WebView` intead of `TreeView`, which offers more flexibility

@@ -27,7 +27,7 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
-### 1.0.6
+### 2.0.0
 
 Use latest version of `fast-xml-parser`
 Extension completely re-written to use `Webview` instead of `TreeView`
