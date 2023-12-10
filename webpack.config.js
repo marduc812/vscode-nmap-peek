@@ -9,8 +9,8 @@ const path = require('path');
 
 /** @type WebpackConfig */
 const extensionConfig = {
-  target: 'node', // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+  target: 'webworker', // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	mode: 'production', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
@@ -25,7 +25,11 @@ const extensionConfig = {
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    mainFields: ['browser', 'module', 'main'],
+    fallback: {
+      "path": require.resolve("path-browserify")
+    }
   },
   module: {
     rules: [
