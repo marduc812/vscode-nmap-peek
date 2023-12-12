@@ -5,3 +5,4 @@ dist-ssr
 build
 build-ssr
 *.local
+src/utilities/test.ts

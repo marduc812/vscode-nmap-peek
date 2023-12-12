@@ -34,3 +34,8 @@
 - Uses `WebView` intead of `TreeView`, which offers more flexibility
 - Filtering option
 - Better UI with more options and interactions
+
+## [2.0.1] - 12.12.2023
+
+- Fixed bug where the app crashed when host was down
+- Added better error handling

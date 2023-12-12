@@ -62,27 +62,34 @@ export const getHostnames = (scanHostnames: any): string => {
 
     let hostnamesList = new Set();
     hostnames.forEach((hostname: any) => {
-
         if (typeof (hostname) === 'string') {
             hostnamesList.add(hostname);
         } else {
-            if (hostname.hostname['@_name']) {
-                hostnamesList.add(hostname.hostname['@_name']);
-            } if (Array.isArray(hostname.hostname)) {
-                let hostnamesSet = new Set();
-                hostname.hostname.forEach((hostnameItem: HostnameType) => {
-                    hostnamesSet.add(hostnameItem['@_name']);
-                });
-
-                let hostnamesArray = Array.from(hostnamesSet);
-                if (hostnamesArray.length === 1) {
-                    hostnamesList.add(hostnamesArray[0]);
-                } else {
-                    hostnamesList.add(hostnamesArray.join(', '));
+            // Check if hostname and its property exist before accessing '@_name'
+            if (hostname && hostname.hostname) {
+                if (typeof hostname.hostname === 'string') {
+                    hostnamesList.add(hostname.hostname);
+                } else if (hostname.hostname['@_name']) {
+                    hostnamesList.add(hostname.hostname['@_name']);
                 }
-            }
-            else {
-                console.log(hostname);
+
+                if (Array.isArray(hostname.hostname)) {
+                    let hostnamesSet = new Set();
+                    hostname.hostname.forEach((hostnameItem: HostnameType) => {
+                        if (hostnameItem && hostnameItem['@_name']) {
+                            hostnamesSet.add(hostnameItem['@_name']);
+                        }
+                    });
+
+                    let hostnamesArray = Array.from(hostnamesSet);
+                    if (hostnamesArray.length === 1) {
+                        hostnamesList.add(hostnamesArray[0]);
+                    } else {
+                        hostnamesList.add(hostnamesArray.join(', '));
+                    }
+                }
+            } else {
+                console.log('Invalid hostname format:', hostname);
             }
         }
     });
@@ -90,6 +97,7 @@ export const getHostnames = (scanHostnames: any): string => {
     const uniqueHostnamesList = [...new Set(hostnamesList)];
     return uniqueHostnamesList.join(', ');
 };
+
 
 
 /**
@@ -100,16 +108,20 @@ export const getHostnames = (scanHostnames: any): string => {
 export const generatePortScanInfo = (scanPorts: any): string[] => {
     let ports: string[] = [];
 
-    // many ports are present
-    if (Array.isArray(scanPorts.port)) {
-
-        scanPorts.port.forEach((port: PortType) => {
-            ports.push(port['@_portid']);
-        });
-
-    } else if (typeof (scanPorts.port) === 'object') {
-        // there is single port
-        ports.push(scanPorts.port['@_portid']);
+    if (scanPorts && scanPorts.port) {
+        // Many ports are present
+        if (Array.isArray(scanPorts.port)) {
+            scanPorts.port.forEach((port: PortType) => {
+                if (port && port['@_portid']) {
+                    ports.push(port['@_portid']);
+                }
+            });
+        } else if (typeof scanPorts.port === 'object') {
+            // There is a single port
+            if (scanPorts.port['@_portid']) {
+                ports.push(scanPorts.port['@_portid']);
+            }
+        }
     }
 
     return ports;

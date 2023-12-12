@@ -59,6 +59,7 @@ const HostView = (props: { host: HostType }) => {
   const mac = parsedAddress.mac;
   const statusClasses = props.host.status['@_state'] === 'up' ? 'text-green-500' : 'text-red-500';
   const hostnames = getHostnames(props.host.hostnames);
+  
   const ports = generatePortScanInfo(props.host.ports);
   const os: { vendor: string, family: string } = findOS(props.host);
 
@@ -86,11 +87,6 @@ const HostView = (props: { host: HostType }) => {
             {ipv6 !== "" && <ItemView title='TP' value="IPv6" titleTooltip={ipv6} />}
             {mac !== "" && <ItemView title='TP' value="MAC" titleTooltip={mac} />}
           </div>
-          
-          {/* <div className='flex flex-row ml-5'>
-            <p className='text-sm text-gray-400 tooltip cursor-default'>TP<span className="tooltiptext">IP Type</span></p>
-            <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{props.host.address['@_addrtype']}</p>
-          </div> */}
           <div className='flex flex-row ml-5'>
             <p className='text-sm text-gray-400 tooltip cursor-default'>PS<span className="tooltiptext">Ports Scanned</span></p>
             <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{ports.length}</p>
