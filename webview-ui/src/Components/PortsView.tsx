@@ -15,7 +15,22 @@ const PortsView = (props: { scanPorts: PortType[], host: string }) => {
 
     return (
         <div>
-            {ports}
+            <table>
+                <thead className='text-left text-gray-500'>
+                    <tr>
+                        <th></th>
+                        <th>Port</th>
+                        <th>Scripts</th>
+                        <th>Service</th>
+                        <th className='pl-2'>Version</th>
+                        <th className='pl-2'>Product</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {ports}
+                </tbody>
+            </table>
+
         </div>
     );
 };
@@ -58,24 +73,35 @@ const PortView = (props: { scanPort: PortType }) => {
     const stateCPE = expandedCPE === true ? 'text-green-500' : 'text-white';
 
     return (
-        <div className='flex flex-col'>
-            <div className='flex flex-row items-center'>
-                <VscCircleLargeFilled width={16} height={16} className={`m-2 ${stateIcon}`} />
-                <p className='text-gray-300 font-bold'>{portId}</p>
-                <div className='flex flex-row'>
-                {script !== '' ? <p className={`${stateScript} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedScript}>S</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
-                {serviceCPE !== ''? <p className={`${stateCPE} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedCPE}>C</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
-                </div>
-                <p className='text-gray-300 ml-2'>{serviceName}</p>
-                <p className='text-gray-300 ml-2'>{serviceVersion}</p>
-                <p className='text-gray-300 ml-2 truncate'>{serviceProduct}</p>
-            </div>
-            <div className={`ml-5 transition-transform duration-700 ease-in-out ${expandedScript ? 'max-h-fit opacity-100' : 'max-h-0 opacity-0'}`}>
-                {expandedScript && script !== '' && <ScriptsView scripts={script} port={portId} />}
-            </div>
-            <div className={`ml-5 transition-transform duration-700 ease-in-out ${expandedCPE ? 'max-h-fit opacity-100' : 'max-h-0 opacity-0'}`}>
-                {expandedCPE && serviceCPE !== '' && <CPEView cpe={serviceCPE} />}
-            </div>
-        </div>
+        <>
+            <tr>
+                <td><VscCircleLargeFilled width={16} height={16} className={`m-2 ${stateIcon}`} /></td>
+                <td><p className='text-gray-300 font-bold'>{portId}</p></td>
+                <td>
+                    <div className='flex flex-row'>
+                        {script !== '' ? <p className={`${stateScript} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedScript}>S</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
+                        {serviceCPE !== '' ? <p className={`${stateCPE} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedCPE}>C</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
+                    </div>
+                </td>
+                <td><p className='text-gray-300 pl-2'>{serviceName}</p></td>
+                <td><p className='text-gray-300 pl-2'>{serviceVersion}</p></td>
+                <td><p className='text-gray-300 pl-2 truncate'>{serviceProduct}</p></td>
+
+            </tr>
+            {expandedScript && script !== '' && (
+                <tr className="transition-transform duration-700 ease-in-out max-h-fit opacity-100">
+                    <td colSpan={6}>
+                        <ScriptsView scripts={script} port={portId} />
+                    </td>
+                </tr>
+            )}
+            {expandedCPE && serviceCPE !== '' && (
+                <tr className="transition-transform duration-700 ease-in-out max-h-fit opacity-100">
+                    <td colSpan={6}>
+                        <CPEView cpe={serviceCPE} />
+                    </td>
+                </tr>
+            )}
+        </>
     );
 };

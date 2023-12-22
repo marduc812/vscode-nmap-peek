@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { HostType } from '../utilities/types';
-import { findOS, generatePortScanInfo, getAddresses, getHostnames } from '../utilities/utils';
+import { filterPort, findOS, generatePortScanInfo, getAddresses, getHostnames } from '../utilities/utils';
 import { VscTriangleUp, VscBlank } from "react-icons/vsc";
 import PortsView from './PortsView';
 import Search from './Search';
@@ -18,16 +18,39 @@ const HostsView = (props: { hosts: HostType | HostType[] }) => {
 
   const handleSearch = (searchQuery: string) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
+
+    let filter = "";
+    let searchvalue = "";
+
+    if (lowerCaseQuery.includes(":")) {
+      filter = lowerCaseQuery.split(':')[0].trim();
+      searchvalue = lowerCaseQuery.split(':')[1].trim();
+    } else {
+      searchvalue = lowerCaseQuery;
+    }
+
     const filtered = allHosts.filter(host => {
       let addresses = Array.isArray(host.address) ? host.address : [host.address];
-      const ipMatch = addresses.some(address => address['@_addr'].toLowerCase().includes(lowerCaseQuery));
-      const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(lowerCaseQuery);
-      return ipMatch || hostnameMatch;
-    });
-    setFilteredHosts(filtered);
-  };
-  
+      const ipMatch = addresses.some(address => address['@_addr'].toLowerCase().includes(searchvalue));
+      const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
+      
 
+      if (filter === 'host') {
+        return ipMatch || hostnameMatch;
+      }
+      
+      const status = host.status['@_state'] === searchvalue;
+
+      if (filter === 'status') {
+        return status;
+      }
+
+      const port = filterPort(host.ports, searchvalue, filter);
+
+      return ipMatch || hostnameMatch || port || status;
+    });
+    setFilteredHosts(filtered);    
+  };
 
   return (
     <div className='w-full flex flex-col'>
@@ -61,6 +84,7 @@ const HostView = (props: { host: HostType }) => {
   const hostnames = getHostnames(props.host.hostnames);
   
   const ports = generatePortScanInfo(props.host.ports);
+  const openCount = ports.filter(item => item.state === "open").length;
   const os: { vendor: string, family: string } = findOS(props.host);
 
   const arrowClasses = expanded ? `rotate-0` : `rotate-180`;
@@ -88,8 +112,8 @@ const HostView = (props: { host: HostType }) => {
             {mac !== "" && <ItemView title='TP' value="MAC" titleTooltip={mac} />}
           </div>
           <div className='flex flex-row ml-5'>
-            <p className='text-sm text-gray-400 tooltip cursor-default'>PS<span className="tooltiptext">Ports Scanned</span></p>
-            <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{ports.length}</p>
+            <p className='text-sm text-gray-400 tooltip cursor-default'>OP<span className="tooltiptext">Open Ports</span></p>
+            <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{openCount}</p>
           </div>
         </div>
       </div>

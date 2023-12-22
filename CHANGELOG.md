@@ -39,3 +39,9 @@
 
 - Fixed bug where the app crashed when host was down
 - Added better error handling
+
+## [2.0.2] - 22.12.2023
+- Added new search filters
+- Improved GUI for better readability
+- Updated the host view to show open ports instead of scanned ports
+- Added VS Code tests to avoid bugs

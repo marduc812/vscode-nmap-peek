@@ -27,6 +27,12 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.0.2
+
+Added filter search options
+Updated view to show open ports instead of scanned ports
+Improved layout
+
 ### 2.0.1
 
 Fixed bug when host was down

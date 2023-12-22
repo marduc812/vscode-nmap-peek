@@ -2,7 +2,7 @@
   "name": "nmap-peek",
   "displayName": "Nmap Peek",
   "description": "View your nmap output inside VS Code, in a nice clean GUI",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "icon": "resources/neutral/nmap-peek-logo.png",
   "author": {
     "name": "marduc812"
@@ -58,7 +58,6 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^18.19.3",
     "@types/vscode": "^1.74.0",
@@ -67,7 +66,6 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.55.0",
-    "glob": "^10.3.10",
     "prettier": "^3.1.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
@@ -77,6 +75,7 @@
   },
   "dependencies": {
     "fast-xml-parser": "^4.3.2",
+    "glob": "^10.3.10",
     "path-browserify": "^1.0.1"
   }
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { PortScriptType } from '../utilities/types';
 
-const ScriptsView = (props: { scripts: {"in": string, "out": string} | {"in": string, "out": string}[], port: string}) => {
+const ScriptsView = (props: { scripts: PortScriptType | PortScriptType[], port: string}) => {
 
-    let scriptsArray : {"in": string, "out": string}[] = [];
+    let scriptsArray : {"@_id": string, "@_output": string}[] = [];
 
     if (!Array.isArray(props.scripts)) {
         scriptsArray.push(props.scripts);
@@ -29,12 +29,12 @@ const ScriptsView = (props: { scripts: {"in": string, "out": string} | {"in": st
 export default ScriptsView;
 
 
-const ScriptView = (props: {script: {"in": string, "out": string}}) => {
+const ScriptView = (props: {script: PortScriptType}) => {
 
   return(
     <div className='flex flex-row ml-2'>
-      <p className='text-gray-400'>{props.script.in}: </p>
-      <p className='text-gray-300 ml-2'>{props.script.out}</p>
+      <p className='text-gray-400'>{props.script['@_id']}: </p>
+      <p className='text-gray-300 ml-2'>{props.script['@_output']}</p>
     </div>
   );
 };

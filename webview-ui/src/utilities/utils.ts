@@ -103,23 +103,23 @@ export const getHostnames = (scanHostnames: any): string => {
 /**
  * Returns the nuymber of ports and the ports of each host
  * @param scanPorts - Takes the ports field from the nmap scan object
- * @returns {string[]} - An array with the ports of the scope
+ * @returns {{number: string, state: string}[]} - An array with the ports and their state of the scope
  */
-export const generatePortScanInfo = (scanPorts: any): string[] => {
-    let ports: string[] = [];
+export const generatePortScanInfo = (scanPorts: any): {number: string, state: string}[] => {
+    let ports: {number: string, state: string}[] = [];
 
     if (scanPorts && scanPorts.port) {
         // Many ports are present
         if (Array.isArray(scanPorts.port)) {
             scanPorts.port.forEach((port: PortType) => {
                 if (port && port['@_portid']) {
-                    ports.push(port['@_portid']);
+                    ports.push({number: port['@_portid'], state: port.state["@_state"]});
                 }
             });
         } else if (typeof scanPorts.port === 'object') {
             // There is a single port
             if (scanPorts.port['@_portid']) {
-                ports.push(scanPorts.port['@_portid']);
+                ports.push({number: scanPorts.port['@_portid'], state: scanPorts.port.state["@_state"]});
             }
         }
     }
@@ -178,19 +178,19 @@ const getOSFromPorts = (ports: PortsType) => {
  * @param scanScript 
  * @returns {in: string, out: string}[] - Object with in and out of script executions
  */
-export const getScripts = (scanScript: PortScriptType[]): { in: string, out: string }[] => {
+export const getScripts = (scanScript: PortScriptType[]): PortScriptType[] => {
     if (scanScript === undefined) {
-        return [{ in: "", out: "" }];
+        return [{ "@_id": "", "@_output": "" }];
     }
-    let scriptsArray: { in: string, out: string }[] = [];
+    let scriptsArray: { "@_id": string, "@_output": string }[] = [];
 
     if (Array.isArray(scanScript)) {
         scanScript.forEach((script: PortScriptType) => {
-            scriptsArray.push({ in: script["@_id"], out: script["@_output"] });
+            scriptsArray.push({ "@_id": script["@_id"], "@_output": script["@_output"] });
         });
     } else if (typeof (scanScript) === 'object') {
         // there is single script
-        scriptsArray.push({ in: scanScript["@_id"], out: scanScript["@_output"] });
+        scriptsArray.push({ "@_id": scanScript["@_id"], "@_output": scanScript["@_output"] });
     }
 
     return scriptsArray;
@@ -219,3 +219,75 @@ export const getCPE = (scanCPE: string | string[]): string => {
     const uniqueCpeList = [...new Set(cpesList)];
     return uniqueCpeList.join(', ');
 };
+
+
+export const filterPort = (ports: PortsType, query: string, filter: string): boolean => {
+    if (!ports || !ports.port) {
+        return false;
+    }
+
+    const normalizedPorts = Array.isArray(ports.port) ? ports.port : [ports.port];
+
+
+    const lowerCaseQuery = query.toLowerCase();
+
+    console.log(`Filter: ${filter} Query: ${lowerCaseQuery}`);
+
+    return normalizedPorts.some(port => {
+        const state = port?.state?.["@_state"] ?? '';
+        const serviceName = port?.service?.['@_name'] ?? '';
+        const serviceOSType = port?.service?.['@_ostype'] ?? '';
+        const serviceProduct = port?.service?.['@_product'] ?? '';
+        const serviceVersion = port?.service?.['@_version'] ?? '';
+        const serviceCPE = port?.service?.cpe ? getCPE(port.service.cpe) : '';
+        const protocol = port?.["@_protocol"] ?? '';
+        const portId = port?.["@_portid"] ?? '';
+        const script = port?.script ? getScripts(port.script) : '';
+
+        switch(filter) {
+            case "state":
+                return state.includes(lowerCaseQuery);
+
+            case "pnumber":
+                return portId === lowerCaseQuery;
+
+            case "pscript":
+                return scriptContains(script, lowerCaseQuery);
+
+            case "sname":
+                return serviceName.includes(lowerCaseQuery);
+            
+            case "protocol":
+                return protocol === lowerCaseQuery;
+
+            case "port":
+                return serviceName.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceOSType.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceProduct.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceVersion.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceCPE.toLowerCase().includes(lowerCaseQuery);
+
+            default:
+                return state.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceName.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceOSType.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceProduct.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceVersion.toLowerCase().includes(lowerCaseQuery) ||
+                    serviceCPE.toLowerCase().includes(lowerCaseQuery) ||
+                    protocol.toLowerCase().includes(lowerCaseQuery) ||
+                    portId.toLowerCase().includes(lowerCaseQuery) ||
+                    scriptContains(script, lowerCaseQuery);
+        }
+    });
+};
+
+
+export const scriptContains = (scripts: PortScriptType[] | "", query: string) : boolean => {
+    if (scripts === "") {
+        return false;
+    }
+
+    return scripts.some(script => {
+        return script["@_output"].toLowerCase().includes(query);
+    });
+}; 
