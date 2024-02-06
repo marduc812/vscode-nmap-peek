@@ -15,9 +15,9 @@ const PortsView = (props: { scanPorts: PortType[], host: string }) => {
 
     return (
         <div>
-            <table>
+            <table className='w-full'>
                 <thead className='text-left text-gray-500'>
-                    <tr>
+                    <tr className='w-full'>
                         <th></th>
                         <th>Port</th>
                         <th>Scripts</th>

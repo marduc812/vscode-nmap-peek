@@ -1,4 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
+import toast from "react-hot-toast";
 import { HostAddressType, HostType, HostnameType, NmapRunType, PortScriptType, PortType, PortsType, ScanInfoType } from "./types";
 
 /**
@@ -231,8 +232,6 @@ export const filterPort = (ports: PortsType, query: string, filter: string): boo
 
     const lowerCaseQuery = query.toLowerCase();
 
-    console.log(`Filter: ${filter} Query: ${lowerCaseQuery}`);
-
     return normalizedPorts.some(port => {
         const state = port?.state?.["@_state"] ?? '';
         const serviceName = port?.service?.['@_name'] ?? '';
@@ -291,3 +290,33 @@ export const scriptContains = (scripts: PortScriptType[] | "", query: string) : 
         return script["@_output"].toLowerCase().includes(query);
     });
 }; 
+
+
+/**
+ * Copies the selected text to clipboard
+ * @param text 
+ */
+export const copyToClip = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast('Copied to clipboard!',
+    {   duration: 700,
+        position: 'top-right',
+        icon: '📋',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+    }
+    );
+};
+
+/**
+ * Returns the URLs extracted from the XML file
+ * @param text : the whole XML content
+ * @returns string[] | null: A list of strings or null if no urls were extracted.
+ */
+export const extractURLs = (text: string): string[] | null => {
+    const urlRegex = /\bhttps?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^`!{}\[\];:'".,<>?«»“”‘’\s]|\/))/g;
+    return text.match(urlRegex);
+};

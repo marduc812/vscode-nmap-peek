@@ -3,6 +3,7 @@ import "./App.css";
 import MainView from './Components/MainView';
 import Footer from './Components/Footer';
 import ErrorBoundary from './Components/ErrorBoundary';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
         <MainView nmapScan={inputFile} />
       </ErrorBoundary>
       <Footer />
+      <Toaster/>
     </main>
   );
 }

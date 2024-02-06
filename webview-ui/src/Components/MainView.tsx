@@ -2,6 +2,7 @@ import React from 'react';
 import ScanInfo from './ScanInfo';
 import HostsView from './HostsView';
 import { parseNmapScan } from '../utilities/utils';
+import Tools from './Tools';
 
 const MainView = (props: { nmapScan: string }) => {
 
@@ -9,7 +10,9 @@ const MainView = (props: { nmapScan: string }) => {
 
   return (
     <div className='w-full'>
+      
       {parsedNmap?.nmaprun?.scaninfo && <ScanInfo scanInfo={parsedNmap.nmaprun.scaninfo} />}
+      {props.nmapScan && parsedNmap?.nmaprun?.host && <Tools xmlNmap={props.nmapScan}/>}
       {parsedNmap?.nmaprun?.host && <HostsView hosts={parsedNmap.nmaprun.host} />}
 
     </div>

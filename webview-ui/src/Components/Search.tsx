@@ -35,7 +35,7 @@ const Search = ({ onSearch }: SearchProps) => {
       
       {visible && <div className='flex flex-col w-full'>
         <h2 className='text-xl text-gray-300 text-center'>Search Filters</h2>
-        <div className='m-2 p-2 ml-5 text-gray-400'>
+        <div className='m-2 p-2 ml-5 text-gray-400 flex flex-col items-center'>
           <p>The default search is matching for strings in every part of the nmap scan</p>
           <p>By using the <span className='bg-gray-800 text-green-500 px-1 rounded border border-green-700'>filter:search term</span> it filters on the service section.</p>
 
