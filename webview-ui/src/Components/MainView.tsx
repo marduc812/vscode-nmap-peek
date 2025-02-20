@@ -10,9 +10,7 @@ const MainView = (props: { nmapScan: string }) => {
 
   return (
     <div className='w-full'>
-      
       {parsedNmap?.nmaprun?.scaninfo && <ScanInfo scanInfo={parsedNmap.nmaprun.scaninfo} />}
-      {props.nmapScan && parsedNmap?.nmaprun?.host && <Tools xmlNmap={props.nmapScan}/>}
       {parsedNmap?.nmaprun?.host && <HostsView hosts={parsedNmap.nmaprun.host} />}
 
     </div>

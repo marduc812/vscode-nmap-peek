@@ -45,3 +45,15 @@
 - Improved GUI for better readability
 - Updated the host view to show open ports instead of scanned ports
 - Added VS Code tests to avoid bugs
+
+
+## [2.1.0] - 20.02.2025
+- Fixed bug with `pnumber` filter
+- `pnumber` now returns only the matching port for each host
+- Added option to export filtered results in 3 formats
+    - JSON
+    - CSV
+    - host:port
+- Best Script visbility
+- Added Fingerprint support
+- Updated dependancies

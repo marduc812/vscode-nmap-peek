@@ -4,6 +4,7 @@ import { getCPE, getScripts } from '../utilities/utils';
 import { VscCircleLargeFilled } from "react-icons/vsc";
 import ScriptsView from './ScriptsView';
 import CPEView from './CPEView';
+import FPView from './FPView';
 
 const PortsView = (props: { scanPorts: PortType[], host: string }) => {
 
@@ -46,14 +47,23 @@ const PortView = (props: { scanPort: PortType }) => {
 
     const [expandedScript, setExpandedScript] = useState(false);
     const [expandedCPE, setExpandedCPE] = useState(false);
+    const [expandedFP, setExpandedFP] = useState(false);
 
     const toggleExpandedScript = () => {
         setExpandedScript(!expandedScript);
         setExpandedCPE(false);
+        setExpandedFP(false);
     };
 
     const toggleExpandedCPE = () => {
         setExpandedCPE(!expandedCPE);
+        setExpandedScript(false);
+        setExpandedFP(false);
+    };
+
+    const toggleExpandedFP = () => {
+        setExpandedFP(!expandedFP);
+        setExpandedCPE(false);
         setExpandedScript(false);
     };
 
@@ -62,15 +72,17 @@ const PortView = (props: { scanPort: PortType }) => {
     const serviceOSType = props.scanPort?.service?.['@_ostype'] ?? '';
     const serviceProduct = props.scanPort?.service?.['@_product'] ?? '';
     const serviceVersion = props.scanPort?.service?.['@_version'] ?? '';
+    const serviceFP = props.scanPort?.service?.['@_servicefp'] ?? '';
     const serviceCPE = props.scanPort?.service?.cpe ? getCPE(props.scanPort.service.cpe) : '';
     const protocol = props.scanPort?.["@_protocol"] ?? '';
     const portId = props.scanPort?.["@_portid"] ?? '';
     const script = props.scanPort?.script ? getScripts(props.scanPort.script) : '';
-
+    
 
     const stateIcon = state === 'open' ? 'fill-green-500' : state === 'closed' ? 'fill-red-500' : 'fill-yellow-500';
     const stateScript = expandedScript === true ? 'text-green-500' : 'text-white';
     const stateCPE = expandedCPE === true ? 'text-green-500' : 'text-white';
+    const stateFP = expandedFP === true ? 'text-green-500' : 'text-white';
 
     return (
         <>
@@ -81,6 +93,7 @@ const PortView = (props: { scanPort: PortType }) => {
                     <div className='flex flex-row'>
                         {script !== '' ? <p className={`${stateScript} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedScript}>S</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
                         {serviceCPE !== '' ? <p className={`${stateCPE} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedCPE}>C</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
+                        {serviceFP !== '' ? <p className={`${stateFP} font-bold ml-2 hover:cursor-pointer`} onClick={toggleExpandedFP}>F</p> : <p className={`text-gray-900 font-bold ml-2 cursor-default`}>N</p>}
                     </div>
                 </td>
                 <td><p className='text-gray-300 pl-2'>{serviceName}</p></td>
@@ -99,6 +112,13 @@ const PortView = (props: { scanPort: PortType }) => {
                 <tr className="transition-transform duration-700 ease-in-out max-h-fit opacity-100">
                     <td colSpan={6}>
                         <CPEView cpe={serviceCPE} />
+                    </td>
+                </tr>
+            )}
+            {expandedFP && serviceFP !== '' && (
+                <tr className="transition-transform duration-700 ease-in-out max-h-fit opacity-100">
+                    <td colSpan={6}>
+                        <FPView fp={serviceFP} />
                     </td>
                 </tr>
             )}

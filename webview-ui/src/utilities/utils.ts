@@ -27,7 +27,11 @@ export const parseNmapScan = (nmapScan: string): NmapRunType | null => {
  * @param scanAddresses - Array of addresses and assigs each to it's category
  * @returns - returns values for each ipv4, ipv6 and mac address
  */
-export const getAddresses = (scanAddresses: HostAddressType[]) => {
+export const getAddresses = (scanAddresses: HostAddressType[] | HostAddressType) => {
+
+    if (!Array.isArray(scanAddresses)) {
+        scanAddresses = [scanAddresses];
+    }
 
     let ipv4 = "";
     let mac = "";
@@ -247,9 +251,6 @@ export const filterPort = (ports: PortsType, query: string, filter: string): boo
             case "state":
                 return state.includes(lowerCaseQuery);
 
-            case "pnumber":
-                return portId === lowerCaseQuery;
-
             case "pscript":
                 return scriptContains(script, lowerCaseQuery);
 
@@ -317,6 +318,38 @@ export const copyToClip = (text: string) => {
  * @returns string[] | null: A list of strings or null if no urls were extracted.
  */
 export const extractURLs = (text: string): string[] | null => {
-    const urlRegex = /\bhttps?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^`!{}\[\];:'".,<>?«»“”‘’\s]|\/))/g;
-    return text.match(urlRegex);
+    const urlRegex = /(?:https?|ftp):\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)|\b(?:https?|ftp):\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g;
+    const matches = text.match(urlRegex);
+    return matches ? matches.map(match => match.trim()) : null; 
+};
+
+
+/**
+ * Returns the host:port format for all ports and hosts
+ * @param hosts : hostType hosts object
+ * @returns string[]: A list of host port format strings
+ */
+export const getHostPorts = (hosts: HostType[]): string[] => {
+    const returnList: string[] = [];
+
+    hosts.forEach(host => {
+        const addresses = Array.isArray(host.address) ? host.address : [host.address];
+        let ports = host.ports?.port; 
+
+        if (ports) { 
+            if (!Array.isArray(ports)) { 
+                ports = [ports]; 
+            }
+
+            addresses.forEach(address => {
+                const ip = address["@_addr"];
+
+                ports.forEach(port => { 
+                    returnList.push(`${ip}:${port["@_portid"]}`);
+                });
+            });
+        }
+    });
+
+    return returnList;
 };

@@ -6,3 +6,5 @@ build
 build-ssr
 *.local
 src/utilities/test.ts
+sample.xml
+scans

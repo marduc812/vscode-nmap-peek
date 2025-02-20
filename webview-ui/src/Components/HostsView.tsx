@@ -19,44 +19,58 @@ const HostsView = (props: { hosts: HostType | HostType[] }) => {
 
   const handleSearch = (searchQuery: string) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-
     let filter = "";
     let searchvalue = "";
-
+  
     if (lowerCaseQuery.includes(":")) {
-      filter = lowerCaseQuery.split(':')[0].trim();
-      searchvalue = lowerCaseQuery.split(':')[1].trim();
+      filter = lowerCaseQuery.split(":")[0].trim();
+      searchvalue = lowerCaseQuery.split(":")[1].trim();
     } else {
       searchvalue = lowerCaseQuery;
     }
-
-    const filtered = allHosts.filter(host => {
-      let addresses = Array.isArray(host.address) ? host.address : [host.address];
-      const ipMatch = addresses.some(address => address['@_addr'].toLowerCase().includes(searchvalue));
-      const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
-
-
-      if (filter === 'host') {
-        return ipMatch || hostnameMatch;
-      }
-
-      const status = host.status['@_state'] === searchvalue;
-
-      if (filter === 'status') {
-        return status;
-      }
-
-      const port = filterPort(host.ports, searchvalue, filter);
-
-      return ipMatch || hostnameMatch || port || status;
-    });
-    setFilteredHosts(filtered);
+  
+    const filtered = allHosts
+      .map((host) => {
+        let addresses = Array.isArray(host.address) ? host.address : [host.address];
+        const ipMatch = addresses.some((address) => address["@_addr"].toLowerCase().includes(searchvalue));
+        const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
+        const status = host.status["@_state"] === searchvalue;
+  
+        if (filter === "pnumber") {
+          const filteredPorts = host.ports?.port?.filter((port) => port["@_portid"] === searchvalue) || [];
+          
+          if (filteredPorts.length === 0) {
+            return null;
+          }
+  
+          return {
+            ...host,
+            ports: { port: filteredPorts }
+          };
+        }
+  
+        if (filter === "host") {
+          return ipMatch || hostnameMatch ? host : null;
+        }
+  
+        if (filter === "status") {
+          return status ? host : null;
+        }
+  
+        const port = filterPort(host.ports, searchvalue, filter);
+        return ipMatch || hostnameMatch || port || status ? host : null;
+      })
+      .filter((host) => host !== null); // Remove null values
+  
+    setFilteredHosts(filtered as HostType[]);
   };
+  
 
   return (
     <div className='w-full flex flex-col'>
       <Search onSearch={handleSearch} />
-      <h2 className='text-white font-bold ml-5 text-2xl'>Hosts</h2>
+      
+      <Tools filteredHosts={filteredHosts} />
       {filteredHosts.map((hostItem, index) => (
         <HostView key={index} host={hostItem} />
       ))}

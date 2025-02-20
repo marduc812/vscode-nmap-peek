@@ -28,11 +28,17 @@ const ScriptsView = (props: { scripts: PortScriptType | PortScriptType[], port: 
 };
 
 const ScriptView = (props: { script: PortScriptType }) => {
+
+  const scriptLines = props.script['@_output'].split("&#xa;");
+
   return (
     <div className='grid m-2'>
-      <p className='text-gray-400'>{props.script['@_id']}: </p>
-      <div className='overflow-x-auto scripts-scrollbar'>
-        <p className='text-gray-300 ml-2 whitespace-nowrap'>{props.script['@_output']}</p>
+      <p className='text-lime-100'>{props.script['@_id']}: </p>
+      <div className='overflow-x-auto scripts-scrollbar mb-2'>
+        {scriptLines.map((line, index) => (
+            <p key={index} className="text-gray-300 ml-2">{line}</p>
+          ))}
+
       </div>
     </div>
   );

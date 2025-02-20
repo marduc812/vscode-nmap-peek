@@ -46,6 +46,7 @@ export type HostAddressType = {
 };
 
 export type HostnameType = {
+        [x: string]: any;
         "@_name": string;
         "@_type": string;
 };
@@ -73,6 +74,7 @@ export type PortServiceType = {
     "@_version": string;
     "@_extrainfo": string;
     "@_ostype": string;
+    "@_servicefp": string;
 };
 
 export type PortScriptType = {

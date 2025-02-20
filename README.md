@@ -27,6 +27,18 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.1.0
+- Fixed bug with `pnumber` filter
+- `pnumber` now returns only the matching port for each host
+- Added option to export filtered results in 3 formats
+    - JSON
+    - CSV
+    - host:port
+- Best Script visbility
+- Added Fingerprint support
+- Updated dependancies
+
+
 ### 2.0.3
 
 - Fixed width layout for ports

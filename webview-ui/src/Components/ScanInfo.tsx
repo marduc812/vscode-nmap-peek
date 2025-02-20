@@ -16,11 +16,7 @@ const ScanInfo = (props: { scanInfo: ScanInfoType }) => {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex w-full flex-row justify-between items-center'>
-        <h2 className='text-white font-bold ml-5 text-2xl mt-5'>Scan Info</h2>
-      </div>
-
-      <div className='flex flex-row w-full text-white justify-evenly'>
+      <div className='flex flex-row w-full text-white justify-evenly mt-2'>
         <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
           <p className='text-gray-400 cursor-default tooltip'>Type<span className="tooltiptext text-sm">Scan Type</span></p>
           <p className='font-bold'>{type.toUpperCase()}</p>

@@ -8,7 +8,6 @@ import { Toaster } from 'react-hot-toast';
 function App() {
 
   const [inputFile, setInputFile] = useState('');
-
   const handleMessage = (event: MessageEvent) => {
     const message = event.data;
     switch (message.command) {
