@@ -1,0 +1,9 @@
+out
+dist
+node_modules
+.vscode-test/
+*.vsix
+.DS_Store
+webview-ui/src/utilities/test.ts
+scans
+.vscode

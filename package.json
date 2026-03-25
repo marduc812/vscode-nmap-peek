@@ -2,7 +2,7 @@
   "name": "nmap-peek",
   "displayName": "Nmap Peek",
   "description": "View your nmap output inside VS Code, in a nice clean GUI",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "icon": "resources/neutral/nmap-peek-logo.png",
   "author": {
     "name": "marduc812"
@@ -74,7 +74,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.3.2",
+    "fast-xml-parser": "^5.5.9",
     "glob": "^10.3.10",
     "path-browserify": "^1.0.1"
   }
