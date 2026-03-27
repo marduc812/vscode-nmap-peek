@@ -27,6 +27,10 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.1.2
+- Updated UI
+- Shows SSL enabled services
+
 ### 2.1.1
 - Updated vulnerable `fast-xml-parser` dependancy
 

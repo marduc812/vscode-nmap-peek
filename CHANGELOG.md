@@ -60,3 +60,9 @@
 
 ## [2.1.1] - 25.03.2026
 - Updated vulnerable `fast-xml-parser` dependancy
+
+## [2.1.2] - 27.03.2026
+- Changed a bit the UI
+- Shows when a service is SSL enabled
+- Improved popup view
+- Cleaner design
