@@ -1,6 +1,4 @@
-import { VscSymbolKeyword, VscLink, VscSparkle } from 'react-icons/vsc';
 import { ScanInfoType } from '../utilities/types';
-import { useState } from 'react';
 
 const ScanInfo = (props: { scanInfo: ScanInfoType }) => {
 
@@ -8,30 +6,25 @@ const ScanInfo = (props: { scanInfo: ScanInfoType }) => {
   const protocol = props.scanInfo['@_protocol'] ? props.scanInfo['@_protocol'] : '-';
   const ports = props.scanInfo['@_numservices'] ? props.scanInfo['@_numservices'] : '-';
 
-  const [visible, setVisible] = useState(false);
-
-  const toggleVisible = () => {
-    setVisible(prevVisible => !prevVisible);
-  };
-
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex flex-row w-full text-white justify-evenly mt-2'>
-        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
-          <p className='text-gray-400 cursor-default tooltip'>Type<span className="tooltiptext text-sm">Scan Type</span></p>
-          <p className='font-bold'>{type.toUpperCase()}</p>
-        </div>
-        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
-          <p className='text-gray-400 cursor-default tooltip'>Protocol<span className="tooltiptext text-sm">Scan Protocol</span></p>
-          <p className='font-bold'>{protocol.toUpperCase()}</p>
-        </div>
-        <div className='bg-gray-800 p-3 m-2 flex flex-col text-center rounded-xl text-xl flex-grow flex-basis-0'>
-          <p className='text-gray-400 cursor-default tooltip'>Scanned<span className="tooltiptext text-sm">Scanned Ports</span></p>
-          <p className='font-bold'>{ports.toUpperCase()}</p>
-        </div>
+      <div className='flex flex-row w-full justify-evenly gap-3 p-3'>
+        <StatCard label="Type" tooltip="Scan Type" value={type.toUpperCase()} />
+        <StatCard label="Protocol" tooltip="Scan Protocol" value={protocol.toUpperCase()} />
+        <StatCard label="Scanned" tooltip="Scanned Ports" value={ports.toUpperCase()} />
       </div>
     </div>
   );
 };
+
+const StatCard = (props: { label: string; tooltip: string; value: string }) => (
+  <div className='flex-1 bg-[#1a1d27] border border-[rgba(255,255,255,0.06)] p-4 flex flex-col text-center rounded-lg hover:border-[rgba(99,102,241,0.3)] transition-colors duration-200'>
+    <p className='text-slate-400 text-xs uppercase tracking-wider mb-1 cursor-default tooltip'>
+      {props.label}
+      <span className="tooltiptext text-xs">{props.tooltip}</span>
+    </p>
+    <p className='text-white font-semibold text-xl'>{props.value}</p>
+  </div>
+);
 
 export default ScanInfo;

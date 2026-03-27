@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { copyToClip, extractURLs, getAddresses, getCPE, getHostnames, getHostPorts, getScripts } from "../utilities/utils";
+import { copyToClip, extractURLs, getAddresses, getHostnames, getHostPorts } from "../utilities/utils";
 import { VscCopy, VscLink, VscSymbolKeyword, VscJson, VscTable, VscSettingsGear } from "react-icons/vsc";
-import { HostType, PortScriptType } from "../utilities/types";
+import { HostType } from "../utilities/types";
 
 const Tools = (props: { filteredHosts: HostType[] }) => {
     const [selectedTool, setSelectedTool] = useState<string | null>(null);
@@ -42,7 +42,7 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
     const exportAsJson = () => {
         const filteredData = props.filteredHosts.map(host => {
             const filteredHost: any = {};
-    
+
             Object.keys(selectedFields).forEach(field => {
                 if (selectedFields[field as keyof typeof selectedFields]) {
                     switch (field) {
@@ -63,13 +63,12 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                     }
                 }
             });
-    
+
             if (host.ports && host.ports.port) {
                 const portsArray = Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port];
                 filteredHost.ports = portsArray.map(port => {
                     const portData: any = {};
-    
-                    // Apply selectedFields filter to port data
+
                     Object.keys(selectedFields).forEach(field => {
                         if (selectedFields[field as keyof typeof selectedFields]) {
                             switch (field) {
@@ -81,7 +80,7 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                                     break;
                                 case "service_name":
                                     if (port.service) {
-                                        portData.service = portData.service || {}; // Initialize if needed
+                                        portData.service = portData.service || {};
                                         portData.service.name = port.service["@_name"] ?? "";
                                     }
                                     break;
@@ -97,17 +96,17 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                                         portData.service.version = port.service["@_version"] ?? "";
                                     }
                                     break;
-                                    
+
                             }
                         }
                     });
                     return portData;
                 });
             }
-    
+
             return filteredHost;
         });
-    
+
         setText(JSON.stringify(filteredData, null, 2));
     };
 
@@ -117,26 +116,26 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
         const csvRows = [fields.join(",")];
 
         props.filteredHosts.forEach(host => {
-            const addresses = Array.isArray(host.address) ? host.address : [host.address]; // Normalize addresses
-            const portsArray = host.ports && host.ports.port ? (Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port]) : []; // Normalize ports
+            const addresses = Array.isArray(host.address) ? host.address : [host.address];
+            const portsArray = host.ports && host.ports.port ? (Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port]) : [];
 
-            if (portsArray.length > 0) { // Check if there are any ports
+            if (portsArray.length > 0) {
                 portsArray.forEach(port => {
                     const row = fields.map(field => {
                         let value;
 
-                        switch (field) { // Use a switch for cleaner code
+                        switch (field) {
                             case "address":
                                 const address = getAddresses(host.address);
                                 value = Object.values(address)
-                                    .filter(value => value !== "") 
+                                    .filter(value => value !== "")
                                     .join(" ");
                                 break;
                             case "status":
                                 value = host.status["@_state"];
                                 break;
                             case "hostname":
-                                value = getHostnames(host.hostnames).replaceAll(","," "); 
+                                value = getHostnames(host.hostnames).replaceAll(","," ");
                                 break;
                             case "portID":
                                 value = port["@_portid"];
@@ -163,14 +162,14 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                     }).join(",");
                     csvRows.push(row);
                 });
-            } else { // Handle hosts without ports
+            } else {
                 const row = fields.map(field => {
                     let value;
                     switch (field) {
                         case "address":
                             const address = getAddresses(host.address);
                             value = Object.values(address)
-                                .filter(value => value !== "") 
+                                .filter(value => value !== "")
                                 .join(" ");
                             break;
                         case "host":
@@ -181,7 +180,7 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                             value = host.status["@_state"];
                             break;
                         case "hostname":
-                            value = getHostnames(host.hostnames).replaceAll(","," "); 
+                            value = getHostnames(host.hostnames).replaceAll(","," ");
                             break;
                         default:
                             value = (host as any)[field] ?? "";
@@ -196,8 +195,10 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
     };
 
     const getButtonClass = (tool: string) =>
-        `flex flex-row items-center p-2 m-2 rounded hover:bg-gray-700 hover:cursor-pointer hover:text-gray-200 ${
-            selectedTool === tool ? "bg-green-500 text-white" : "bg-gray-800 text-gray-400"
+        `flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors duration-150 cursor-pointer ${
+            selectedTool === tool
+                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                : "bg-[#252836] text-slate-400 border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] hover:text-slate-200"
         }`;
 
 
@@ -206,111 +207,97 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
     };
 
     return (
-        <div>
-            <div className="text-gray-400 flex flex-row items-center justify-between w-full">
-                <div className="flex flex-row justify-center flex-grow items-center">
-                    <h1 className="text-2xl text-white mx-5">Extract</h1>
+        <div className="px-3 py-2">
+            <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Extract</span>
 
-                    <div className={getButtonClass("urls")} onClick={() => handleSelection("urls", getUrls)}>
-                        <VscLink className="text-xl mr-2" />
-                        <h2 className="text-md">URLs</h2>
-                    </div>
+                <div className={getButtonClass("urls")} onClick={() => handleSelection("urls", getUrls)}>
+                    <VscLink className="text-sm" />
+                    <span>URLs</span>
+                </div>
 
-                    <div className={getButtonClass("hostPort")} onClick={() => handleSelection("hostPort", extractHostPort)}>
-                        <VscSymbolKeyword className="text-xl mr-2" />
-                        <h2 className="text-md">host:port</h2>
-                    </div>
+                <div className={getButtonClass("hostPort")} onClick={() => handleSelection("hostPort", extractHostPort)}>
+                    <VscSymbolKeyword className="text-sm" />
+                    <span>host:port</span>
+                </div>
 
-                    <div className="min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400 mx-2"></div>
+                <div className="w-px h-4 bg-slate-700/50 mx-1" />
 
-                    <div className="flex flex-row justify-center items-center">
-                        <h1 className="text-2xl text-white mx-5">Export</h1>
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Export</span>
 
-                        <div className={getButtonClass("json")} onClick={() => handleSelection("json", exportAsJson)}>
-                            <VscJson className="text-xl mr-2" />
-                            <h2 className="text-md">JSON</h2>
-                        </div>
+                <div className={getButtonClass("json")} onClick={() => handleSelection("json", exportAsJson)}>
+                    <VscJson className="text-sm" />
+                    <span>JSON</span>
+                </div>
 
-                        <div className={getButtonClass("csv")} onClick={() => handleSelection("csv", exportAsCSV)}>
-                            <VscTable className="text-xl mr-2" />
-                            <h2 className="text-md">CSV</h2>
-                        </div>
+                <div className={getButtonClass("csv")} onClick={() => handleSelection("csv", exportAsCSV)}>
+                    <VscTable className="text-sm" />
+                    <span>CSV</span>
+                </div>
 
-                        <div className={getButtonClass("settings")} onClick={() => handleSelection("settings", showSettings)}>
-                            <VscSettingsGear className="text-xl" />
-                        </div>
-                    </div>
+                <div className={getButtonClass("settings")} onClick={() => handleSelection("settings", showSettings)}>
+                    <VscSettingsGear className="text-sm" />
                 </div>
             </div>
 
-            {selectedTool && (
-                <div>
-                    <div className="flex flex-row items-center justify-between">
-                        <h4 className="text-gray-300 font-bold ml-5 text-xl text-green-300">Extracted</h4>
-                        <div className="flex flex-row text-gray-300 items-center hover:text-gray-100 active:text-white hover:cursor-pointer mr-5"
-                            onClick={() => copyToClip(text)}>
-                            <VscCopy className="font-bold ml-5 text-xl mr-2" />
-                            <h2>COPY</h2>
+            {selectedTool && selectedTool !== "settings" && (
+                <div className="mt-2">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <h4 className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Output</h4>
+                        <div
+                            className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 cursor-pointer transition-colors"
+                            onClick={() => copyToClip(text)}
+                        >
+                            <VscCopy className="text-sm" />
+                            <span>Copy</span>
                         </div>
                     </div>
 
-                    <div className="h-40 bg-gray-800 m-2 border rounded-md border-gray-700 max-w-full scripts-scrollbar p-2 overflow-auto">
-                        <p className="whitespace-pre-wrap text-gray-200">{text}</p>
+                    <div className="max-h-48 bg-[#0f1117] rounded-md border border-[rgba(255,255,255,0.06)] p-2 overflow-auto scripts-scrollbar">
+                        <pre className="whitespace-pre-wrap text-slate-300 text-xs font-mono">{text}</pre>
                     </div>
                 </div>
             )}
 
             {settingsVisible && (
-                <div className="p-4 bg-gray-900 rounded-md mt-2">
-                    <h4 className="text-gray-300 font-bold text-xl text-green-300">Export Options</h4>
-                    <div className="m-2 text-gray-100">
-                        <h2 className="text-white font-bold text-xl">Host</h2>
-                        <div className="grid grid-cols-5 grid-rows-1 gap-4 m-5">
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["status"]} onChange={() => toggleField("status")} />
-                                <p className="ml-2">Status</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["address"]} onChange={() => toggleField("address")} />
-                                <p className="ml-2">Address</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["hostname"]} onChange={() => toggleField("hostname")} />
-                                <p className="ml-2">Hostname</p>
-                            </div>
+                <div className="mt-2 bg-[#0f1117] border border-[rgba(255,255,255,0.06)] rounded-md p-3">
+                    <h4 className="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-3">Export Fields</h4>
+
+                    <div className="mb-3">
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-2">Host</p>
+                        <div className="flex flex-wrap gap-3">
+                            <FieldCheckbox label="Status" checked={selectedFields["status"]} onChange={() => toggleField("status")} />
+                            <FieldCheckbox label="Address" checked={selectedFields["address"]} onChange={() => toggleField("address")} />
+                            <FieldCheckbox label="Hostname" checked={selectedFields["hostname"]} onChange={() => toggleField("hostname")} />
                         </div>
                     </div>
 
-                    <div className="m-2 text-gray-100">
-                        <h2 className="text-white font-bold text-xl">Post</h2>
-                        <div className="grid grid-cols-5 grid-rows-2 gap-4 m-5">
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["portID"]} onChange={() => toggleField("portID")} />
-                                <p className="ml-2">PortID</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["state"]} onChange={() => toggleField("state")} />
-                                <p className="ml-2">State</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["service_name"]} onChange={() => toggleField("service_name")} />
-                                <p className="ml-2">Service Name</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["service_product"]} onChange={() => toggleField("service_product")} />
-                                <p className="ml-2">Service Product</p>
-                            </div>
-                            <div className="flex flex-row">
-                                <input type="checkbox" checked={selectedFields["service_version"]} onChange={() => toggleField("service_version")} />
-                                <p className="ml-2">Service Version</p>
-                            </div>
+                    <div>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-2">Port</p>
+                        <div className="flex flex-wrap gap-3">
+                            <FieldCheckbox label="Port ID" checked={selectedFields["portID"]} onChange={() => toggleField("portID")} />
+                            <FieldCheckbox label="State" checked={selectedFields["state"]} onChange={() => toggleField("state")} />
+                            <FieldCheckbox label="Service Name" checked={selectedFields["service_name"]} onChange={() => toggleField("service_name")} />
+                            <FieldCheckbox label="Service Product" checked={selectedFields["service_product"]} onChange={() => toggleField("service_product")} />
+                            <FieldCheckbox label="Service Version" checked={selectedFields["service_version"]} onChange={() => toggleField("service_version")} />
                         </div>
                     </div>
-
                 </div>
             )}
         </div>
     );
 };
+
+const FieldCheckbox = (props: { label: string; checked: boolean; onChange: () => void }) => (
+    <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer hover:text-slate-100 transition-colors">
+        <input
+            type="checkbox"
+            checked={props.checked}
+            onChange={props.onChange}
+            className="rounded border-slate-600 bg-[#252836] text-indigo-500 focus:ring-indigo-500/20 focus:ring-offset-0 w-3.5 h-3.5"
+        />
+        {props.label}
+    </label>
+);
 
 export default Tools;

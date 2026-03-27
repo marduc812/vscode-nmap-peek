@@ -75,6 +75,7 @@ export type PortServiceType = {
     "@_extrainfo": string;
     "@_ostype": string;
     "@_servicefp": string;
+    "@_tunnel"?: string;
 };
 
 export type PortScriptType = {

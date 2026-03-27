@@ -4,14 +4,11 @@ const FPView = (props: { fp: string }) => {
 
   const fptext = props.fp.split(":", 2)[1] + props.fp.substring(props.fp.indexOf(":") + 1);
 
-
   return (
-    <div className="flex flex-col ml-5 mb-5">
-      <h4 className="text-white font-bold">Fingerprinting</h4>
-      <div className="overflow-auto h-40 bg-gray-800 m-2 border rounded-md border-gray-700 max-w-full scripts-scrollbar">
-        <div className="w-full">
-          <p className="text-gray-300 ml-2">{sanitizeAndFormat(fptext)}</p>
-        </div>
+    <div className="my-2 ml-4">
+      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Fingerprint</h4>
+      <div className="overflow-auto max-h-48 bg-[#0f1117] rounded-md border border-[rgba(255,255,255,0.06)] scripts-scrollbar p-2">
+        <p className="text-slate-300 text-xs font-mono whitespace-pre-wrap leading-relaxed">{sanitizeAndFormat(fptext)}</p>
       </div>
     </div>
   );

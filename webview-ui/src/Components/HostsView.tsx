@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HostType } from '../utilities/types';
 import { filterPort, findOS, generatePortScanInfo, getAddresses, getHostnames, copyToClip } from '../utilities/utils';
-import { VscTriangleUp, VscBlank } from "react-icons/vsc";
+import { VscChevronDown } from "react-icons/vsc";
 import PortsView from './PortsView';
 import Search from './Search';
 import Tools from './Tools';
@@ -21,59 +21,60 @@ const HostsView = (props: { hosts: HostType | HostType[] }) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     let filter = "";
     let searchvalue = "";
-  
+
     if (lowerCaseQuery.includes(":")) {
       filter = lowerCaseQuery.split(":")[0].trim();
       searchvalue = lowerCaseQuery.split(":")[1].trim();
     } else {
       searchvalue = lowerCaseQuery;
     }
-  
+
     const filtered = allHosts
       .map((host) => {
         let addresses = Array.isArray(host.address) ? host.address : [host.address];
         const ipMatch = addresses.some((address) => address["@_addr"].toLowerCase().includes(searchvalue));
         const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
         const status = host.status["@_state"] === searchvalue;
-  
+
         if (filter === "pnumber") {
           const filteredPorts = host.ports?.port?.filter((port) => port["@_portid"] === searchvalue) || [];
-          
+
           if (filteredPorts.length === 0) {
             return null;
           }
-  
+
           return {
             ...host,
             ports: { port: filteredPorts }
           };
         }
-  
+
         if (filter === "host") {
           return ipMatch || hostnameMatch ? host : null;
         }
-  
+
         if (filter === "status") {
           return status ? host : null;
         }
-  
+
         const port = filterPort(host.ports, searchvalue, filter);
         return ipMatch || hostnameMatch || port || status ? host : null;
       })
-      .filter((host) => host !== null); // Remove null values
-  
+      .filter((host) => host !== null);
+
     setFilteredHosts(filtered as HostType[]);
   };
-  
+
 
   return (
     <div className='w-full flex flex-col'>
       <Search onSearch={handleSearch} />
-      
       <Tools filteredHosts={filteredHosts} />
-      {filteredHosts.map((hostItem, index) => (
-        <HostView key={index} host={hostItem} />
-      ))}
+      <div className='px-3 pb-3 space-y-2'>
+        {filteredHosts.map((hostItem, index) => (
+          <HostView key={index} host={hostItem} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -96,56 +97,85 @@ const HostView = (props: { host: HostType }) => {
   const ip = parsedAddress.ipv4;
   const ipv6 = parsedAddress.ipv6;
   const mac = parsedAddress.mac;
-  const statusClasses = props.host.status['@_state'] === 'up' ? 'text-green-500 active:text-green-400' : 'text-red-500 active:text-red-400';
+  const isUp = props.host.status['@_state'] === 'up';
   const hostnames = getHostnames(props.host.hostnames);
 
   const ports = generatePortScanInfo(props.host.ports);
   const openCount = ports.filter(item => item.state === "open").length;
   const os: { vendor: string, family: string } = findOS(props.host);
-
-  const arrowClasses = expanded ? `rotate-0` : `rotate-180`;
-  const arrowImageHover = ports.length !== 0 ? 'hover:cursor-pointer' : '';
+  const hasPorts = ports.length !== 0;
 
   return (
-    <div className='flex flex-col'>
-      <div className='flex flex-col bg-gray-800 m-2 p-2 rounded-lg'>
-        <div className='flex flex-row'>
-          <p className={`${statusClasses} font-bold text-lg hover:cursor-pointer`} onClick={() => copyToClip(ip)}>{ip}</p>
-          {hostnames !== "" && <p className='text-gray-400 ml-2'>({hostnames})</p>}
+    <div className='bg-[#1a1d27] border border-[rgba(255,255,255,0.06)] rounded-lg hover:border-[rgba(255,255,255,0.1)] transition-colors duration-200'>
+      <div
+        className={`flex items-center justify-between p-3 ${hasPorts ? 'cursor-pointer' : ''}`}
+        onClick={hasPorts ? toggleExpanded : undefined}
+      >
+        <div className='flex items-center gap-3 min-w-0'>
+          {/* Status dot */}
+          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isUp ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.4)]' : 'bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.4)]'}`} />
+
+          {/* IP address */}
+          <span
+            className={`font-semibold text-sm ${isUp ? 'text-emerald-300' : 'text-red-300'} hover:underline cursor-pointer`}
+            onClick={(e) => { e.stopPropagation(); copyToClip(ip); }}
+          >
+            {ip}
+          </span>
+
+          {/* Hostname */}
+          {hostnames !== "" && (
+            <span className='text-slate-500 text-xs truncate'>{hostnames}</span>
+          )}
         </div>
-        <div className='flex flex-row items-center'>
-          <div onClick={toggleExpanded} className={`${arrowImageHover} transition-transform duration-500 ease-in-out ${arrowClasses}`}>
-            {ports.length !== 0 ? <VscTriangleUp className='m-1 fill-white' width={16} height={16} /> : <VscBlank className='m-1 fill-white' width={16} height={16} />}
+
+        <div className='flex items-center gap-4 flex-shrink-0'>
+          {/* Meta badges */}
+          {(os.vendor || os.family) && (
+            <MetaBadge label="OS" value={`${os.vendor} ${os.family}`.trim()} />
+          )}
+
+          <div className='flex items-center gap-1.5'>
+            {ip !== "" && <TagBadge text="IPv4" tooltip={ip} />}
+            {ipv6 !== "" && <TagBadge text="IPv6" tooltip={ipv6} />}
+            {mac !== "" && <TagBadge text="MAC" tooltip={mac} />}
           </div>
-          <div className='flex flex-row ml-2'>
-            <p className='text-sm text-gray-400 tooltip cursor-default'>OS<span className="tooltiptext">Operating System</span></p>
-            <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{os.vendor} {os.family}</p>
-          </div>
-          <div className='flex flex-row ml-5'>
-            <p className='text-sm text-gray-400 tooltip cursor-default'>IP<span className="tooltiptext">Supported Address</span></p>
-            {ip !== "" && <ItemView title='TP' value="IPv4" titleTooltip={ip} />}
-            {ipv6 !== "" && <ItemView title='TP' value="IPv6" titleTooltip={ipv6} />}
-            {mac !== "" && <ItemView title='TP' value="MAC" titleTooltip={mac} />}
-          </div>
-          <div className='flex flex-row ml-5'>
-            <p className='text-sm text-gray-400 tooltip cursor-default'>OP<span className="tooltiptext">Open Ports</span></p>
-            <p className='ml-2 uppercase text-gray-300 text-sm font-bold'>{openCount}</p>
-          </div>
+
+          {openCount > 0 && (
+            <MetaBadge label="Open" value={String(openCount)} highlight />
+          )}
+
+          {/* Expand chevron */}
+          {hasPorts && (
+            <VscChevronDown
+              className={`text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+            />
+          )}
         </div>
-      </div>
-      <div className={`ml-5 transition-transform duration-700 ease-in-out overflow-hidden ${expanded ? 'max-h-fit opacity-100' : 'max-h-0 opacity-0'}`}>
-        {expanded && <PortsView scanPorts={portsData} host={ip} />}
       </div>
 
+      {/* Expanded ports */}
+      {expanded && (
+        <div className='border-t border-[rgba(255,255,255,0.04)] px-3 pb-3'>
+          <PortsView scanPorts={portsData} host={ip} />
+        </div>
+      )}
     </div>
   );
 };
 
+const MetaBadge = (props: { label: string; value: string; highlight?: boolean }) => (
+  <div className='flex items-center gap-1.5 text-xs'>
+    <span className='text-slate-500'>{props.label}</span>
+    <span className={`font-medium ${props.highlight ? 'text-emerald-400' : 'text-slate-300'}`}>
+      {props.value}
+    </span>
+  </div>
+);
 
-const ItemView = (props: { title: string, value: string, titleTooltip: string }) => {
-  return (
-    <div className='flex flex-row'>
-      <p className='ml-2 text-gray-300 text-sm font-bold tooltip'>{props.value}{props.titleTooltip !== "" && <span className="tooltiptext">{props.titleTooltip}</span>}</p>
-    </div>
-  );
-};
+const TagBadge = (props: { text: string; tooltip: string }) => (
+  <span className='text-[10px] px-1.5 py-0.5 rounded bg-[#252836] text-slate-400 border border-[rgba(255,255,255,0.06)] tooltip cursor-default'>
+    {props.text}
+    {props.tooltip !== "" && <span className="tooltiptext">{props.tooltip}</span>}
+  </span>
+);

@@ -15,13 +15,10 @@ const ScriptsView = (props: { scripts: PortScriptType | PortScriptType[], port: 
   ));
 
   return (
-    <div className='flex flex-col ml-5 mb-5'>
-      <h4 className='text-white font-bold'>Scripts</h4>
-      <div className='overflow-auto h-40 bg-gray-800 m-2 border rounded-md border-gray-700 max-w-full scripts-scrollbar'>
-        <div className='w-full'>
+    <div className='my-2 ml-4'>
+      <h4 className='text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5'>Scripts</h4>
+      <div className='overflow-auto max-h-48 bg-[#0f1117] rounded-md border border-[rgba(255,255,255,0.06)] scripts-scrollbar'>
         {scriptsView}
-        </div>
-        
       </div>
     </div>
   );
@@ -32,13 +29,12 @@ const ScriptView = (props: { script: PortScriptType }) => {
   const scriptLines = props.script['@_output'].split("&#xa;");
 
   return (
-    <div className='grid m-2'>
-      <p className='text-lime-100'>{props.script['@_id']}: </p>
-      <div className='overflow-x-auto scripts-scrollbar mb-2'>
+    <div className='p-2 border-b border-[rgba(255,255,255,0.03)] last:border-b-0'>
+      <p className='text-indigo-300 text-xs font-semibold font-mono mb-0.5'>{props.script['@_id']}</p>
+      <div className='overflow-x-auto scripts-scrollbar'>
         {scriptLines.map((line, index) => (
-            <p key={index} className="text-gray-300 ml-2">{line}</p>
-          ))}
-
+          <p key={index} className="text-slate-400 text-xs font-mono ml-2 leading-relaxed">{line}</p>
+        ))}
       </div>
     </div>
   );

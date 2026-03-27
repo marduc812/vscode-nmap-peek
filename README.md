@@ -27,6 +27,9 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.1.1
+- Updated vulnerable `fast-xml-parser` dependancy
+
 ### 2.1.0
 - Fixed bug with `pnumber` filter
 - `pnumber` now returns only the matching port for each host

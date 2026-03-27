@@ -7,3 +7,5 @@ node_modules
 webview-ui/src/utilities/test.ts
 scans
 .vscode
+CLAUDE.md
+.claude/

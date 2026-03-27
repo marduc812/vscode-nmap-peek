@@ -57,3 +57,6 @@
 - Best Script visbility
 - Added Fingerprint support
 - Updated dependancies
+
+## [2.1.1] - 25.03.2026
+- Updated vulnerable `fast-xml-parser` dependancy

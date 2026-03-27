@@ -76,7 +76,8 @@ export class HelloWorldPanel {
           <title>Hello World</title>
         </head>
         <body>
-          <div id="root" class="bg-gray-900 min-h-screen items-start"></div>
+          <div id="root" class="min-h-screen items-start"></div>
+          <script nonce="${nonce}">window.scrollTo(0, 0);</script>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
       </html>

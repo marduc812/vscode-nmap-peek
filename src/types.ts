@@ -73,6 +73,7 @@ export type PortServiceType = {
     "@_version": string;
     "@_extrainfo": string;
     "@_ostype": string;
+    "@_tunnel"?: string;
 };
 
 export type PortScriptType = {

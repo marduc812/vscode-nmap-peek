@@ -2,14 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-primary: #0f1117;
+  --bg-card: #1a1d27;
+  --bg-card-hover: #1e2230;
+  --bg-input: #252836;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(99, 102, 241, 0.3);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #eab308;
+}
+
+body {
+  background-color: var(--bg-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  height: 100%;
+  min-height: 100%;
+  padding: 0.5rem;
 }
 
+/* Tooltip */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -18,19 +43,24 @@ main {
 .tooltip .tooltiptext {
   visibility: hidden;
   width: fit-content;
-  padding: 5px;
-  background-color: #555;
-  color: #fff;
+  padding: 4px 10px;
+  background-color: #1e293b;
+  color: #e2e8f0;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   position: absolute;
-  z-index: 1;
+  z-index: 9999;
   bottom: 125%;
   left: 50%;
-  margin-left: -60px;
+  transform: translateX(-50%) translateY(4px);
+  margin-left: 0;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
 }
 
 .tooltip .tooltiptext::after {
@@ -38,26 +68,38 @@ main {
   position: absolute;
   top: 100%;
   left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
+  margin-left: -4px;
+  border-width: 4px;
   border-style: solid;
-  border-color: #555 transparent transparent transparent;
+  border-color: #1e293b transparent transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
+/* Scrollbar */
 .scripts-scrollbar::-webkit-scrollbar {
-  width: 12px; 
+  width: 6px;
+  height: 6px;
 }
 
 .scripts-scrollbar::-webkit-scrollbar-track {
-  background: #1F2937; 
+  background: transparent;
 }
 
 .scripts-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #71717a; 
-  border-radius: 9999px; 
+  background-color: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+
+.scripts-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.4);
+}
+
+/* Smooth transitions for expandable sections */
+.expand-section {
+  transition: max-height 0.3s ease, opacity 0.3s ease;
 }

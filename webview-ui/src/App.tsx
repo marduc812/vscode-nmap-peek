@@ -13,6 +13,7 @@ function App() {
     switch (message.command) {
       case 'sendData':
         setInputFile(message.data);
+        window.scrollTo(0, 0);
         break;
     }
   };
@@ -26,12 +27,21 @@ function App() {
   }, []);
 
   return (
-    <main className="">
+    <main className="min-h-screen">
       <ErrorBoundary>
         <MainView nmapScan={inputFile} />
       </ErrorBoundary>
       <Footer />
-      <Toaster/>
+      <Toaster
+        toastOptions={{
+          style: {
+            background: '#1a1d27',
+            color: '#e2e8f0',
+            border: '1px solid rgba(255,255,255,0.06)',
+            fontSize: '0.875rem',
+          },
+        }}
+      />
     </main>
   );
 }
