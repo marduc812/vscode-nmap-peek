@@ -299,16 +299,24 @@ export const scriptContains = (scripts: PortScriptType[] | "", query: string) : 
  */
 export const copyToClip = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast('Copied to clipboard!',
-    {   duration: 700,
-        position: 'top-right',
-        icon: '📋',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-    }
+    const truncated = text.length > 40 ? text.substring(0, 40) + '...' : text;
+    toast(
+        (t) => (
+            `Copied: ${truncated}`
+        ),
+        {
+            duration: 1200,
+            position: 'bottom-center',
+            style: {
+                borderRadius: '8px',
+                background: '#1a1d27',
+                color: '#e2e8f0',
+                border: '1px solid rgba(99, 102, 241, 0.3)',
+                fontSize: '0.8rem',
+                padding: '8px 16px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            },
+        }
     );
 };
 

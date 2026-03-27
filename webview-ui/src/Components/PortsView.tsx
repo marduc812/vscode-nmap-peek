@@ -21,7 +21,6 @@ const PortsView = (props: { scanPorts: PortType[], host: string }) => {
                     <tr className='text-slate-500 text-xs uppercase tracking-wider'>
                         <th className='pb-2 pl-1 w-6'></th>
                         <th className='pb-2 text-left font-medium'>Port</th>
-                        <th className='pb-2 text-left font-medium w-8'>SSL</th>
                         <th className='pb-2 text-left font-medium'>Info</th>
                         <th className='pb-2 text-left font-medium'>Service</th>
                         <th className='pb-2 text-left font-medium pl-2'>Version</th>
@@ -97,17 +96,15 @@ const PortView = (props: { scanPort: PortType }) => {
                     <span className='text-slate-200 font-mono font-medium'>{portId}</span>
                 </td>
                 <td className='py-1.5'>
-                    {isSSL ? (
-                        <span className='inline-flex items-center gap-0.5 text-[10px] font-medium text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5' title={tunnel === 'ssl' ? 'SSL tunnel' : 'SSL service detected'}>
-                            <VscLock className='text-[10px]' />
-                            SSL
-                        </span>
-                    ) : (
-                        <span className='text-slate-700 text-[10px]'>—</span>
-                    )}
-                </td>
-                <td className='py-1.5'>
                     <div className='flex items-center gap-1'>
+                        <span className='w-5 h-5 inline-flex items-center justify-center'>
+                            {isSSL && (
+                                <span className='text-amber-300 tooltip cursor-default'>
+                                    <VscLock className='text-[10px]' />
+                                    <span className="tooltiptext">SSL/TLS enabled</span>
+                                </span>
+                            )}
+                        </span>
                         <InfoPill letter="S" active={hasScript} expanded={expandedScript} onClick={hasScript ? toggleExpandedScript : undefined} title="Scripts" />
                         <InfoPill letter="C" active={hasCPE} expanded={expandedCPE} onClick={hasCPE ? toggleExpandedCPE : undefined} title="CPE" />
                         <InfoPill letter="F" active={hasFP} expanded={expandedFP} onClick={hasFP ? toggleExpandedFP : undefined} title="Fingerprint" />
@@ -119,21 +116,21 @@ const PortView = (props: { scanPort: PortType }) => {
             </tr>
             {expandedScript && hasScript && (
                 <tr>
-                    <td colSpan={7}>
+                    <td colSpan={6}>
                         <ScriptsView scripts={script} port={portId} />
                     </td>
                 </tr>
             )}
             {expandedCPE && hasCPE && (
                 <tr>
-                    <td colSpan={7}>
+                    <td colSpan={6}>
                         <CPEView cpe={serviceCPE} />
                     </td>
                 </tr>
             )}
             {expandedFP && hasFP && (
                 <tr>
-                    <td colSpan={7}>
+                    <td colSpan={6}>
                         <FPView fp={serviceFP} />
                     </td>
                 </tr>

@@ -125,7 +125,12 @@ const HostView = (props: { host: HostType }) => {
 
           {/* Hostname */}
           {hostnames !== "" && (
-            <span className='text-slate-500 text-xs truncate'>{hostnames}</span>
+            <span
+              className='text-slate-500 text-xs truncate cursor-pointer hover:text-slate-300 transition-colors active:text-indigo-300'
+              onClick={(e) => { e.stopPropagation(); copyToClip(hostnames); }}
+            >
+              {hostnames}
+            </span>
           )}
         </div>
 
@@ -174,7 +179,10 @@ const MetaBadge = (props: { label: string; value: string; highlight?: boolean })
 );
 
 const TagBadge = (props: { text: string; tooltip: string }) => (
-  <span className='text-[10px] px-1.5 py-0.5 rounded bg-[#252836] text-slate-400 border border-[rgba(255,255,255,0.06)] tooltip cursor-default'>
+  <span
+    className='text-[10px] px-1.5 py-0.5 rounded bg-[#252836] text-slate-400 border border-[rgba(255,255,255,0.06)] tooltip cursor-pointer hover:text-slate-200 hover:border-[rgba(255,255,255,0.15)] transition-colors active:text-indigo-300'
+    onClick={(e) => { e.stopPropagation(); if (props.tooltip) { copyToClip(props.tooltip); } }}
+  >
     {props.text}
     {props.tooltip !== "" && <span className="tooltiptext">{props.tooltip}</span>}
   </span>

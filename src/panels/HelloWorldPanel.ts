@@ -92,11 +92,8 @@ export class HelloWorldPanel {
 
         switch (command) {
           case "hello":
-
             window.showInformationMessage(text);
             return;
-
-
         }
       },
       undefined,
