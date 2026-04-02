@@ -66,3 +66,7 @@
 - Shows when a service is SSL enabled
 - Improved popup view
 - Cleaner design
+
+## [2.1.3] - 02.04.2026
+- Fixed bug with XML-Parser which limited the number of entities
+- Updated outdated dependancies

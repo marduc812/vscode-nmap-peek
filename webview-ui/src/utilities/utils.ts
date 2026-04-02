@@ -10,7 +10,8 @@ import { HostAddressType, HostType, HostnameType, NmapRunType, PortScriptType, P
 export const parseNmapScan = (nmapScan: string): NmapRunType | null => {
     const parsingOptions = {
         ignoreAttributes: false,
-        ignoreNameSpace: false
+        ignoreNameSpace: false,
+        processEntities: false
     };
     const xmlParser = new XMLParser(parsingOptions);
     try {

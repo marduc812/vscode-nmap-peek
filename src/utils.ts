@@ -34,7 +34,8 @@ export const parseXMLContent = (editor: vscode.TextEditor): NmapRunType | null =
     const fileContent = editor.document.getText();
     const parsingOptions = {
         ignoreAttributes: false,
-        ignoreNameSpace: false
+        ignoreNameSpace: false,
+        processEntities: false
     };
     const xmlParser = new XMLParser(parsingOptions);
     try {

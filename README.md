@@ -27,6 +27,10 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.1.3
+- Fixed bug with XML-Parser which limited the number of entities
+- Updated outdated dependancies
+
 ### 2.1.2
 - Updated UI
 - Shows SSL enabled services
