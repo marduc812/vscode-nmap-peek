@@ -122,16 +122,12 @@ const HostView = (props: { host: HostType }) => {
             {mac !== "" && <TagBadge text="MAC" tooltip={mac} />}
           </div>
 
-          {openCount > 0 && (
-            <MetaBadge label="Open" value={String(openCount)} highlight />
-          )}
+          <MetaBadge label="Open" value={String(openCount)} highlight={openCount > 0} />
 
-          {/* Expand chevron */}
-          {hasPorts && (
-            <VscChevronDown
-              className={`text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-            />
-          )}
+          {/* Expand chevron (transparent placeholder when there are no ports, to keep alignment) */}
+          <VscChevronDown
+            className={`text-slate-500 transition-transform duration-200 ${expanded ? 'rotate-180' : ''} ${hasPorts ? '' : 'opacity-0'}`}
+          />
         </div>
       </div>
 

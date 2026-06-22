@@ -28,7 +28,7 @@ body {
 main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   min-height: 100%;
   padding: 0.5rem;

@@ -3,7 +3,21 @@ export type NmapRunType = {
     "nmaprun": {
         "scaninfo": ScanInfoType;
         "host": HostType | HostType[];
+        "runstats"?: RunStatsType;
+        "@_args"?: string;
+        "@_start"?: string;
+        "@_startstr"?: string;
     }
+};
+
+export type RunStatsType = {
+    "finished"?: {
+        "@_time"?: string;
+        "@_timestr"?: string;
+        "@_elapsed"?: string;
+        "@_summary"?: string;
+        "@_exit"?: string;
+    };
 };
 
 export type ScanInfoType = {
