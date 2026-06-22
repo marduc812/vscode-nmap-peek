@@ -327,7 +327,7 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                         {/* Modal footer */}
                         <div className="px-4 py-3 border-t border-[rgba(255,255,255,0.06)] flex justify-end">
                             <div
-                                className="px-3 py-1.5 rounded-md text-xs font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 cursor-pointer hover:bg-indigo-500/30 transition-colors"
+                                className="px-3 py-1.5 rounded-md text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer hover:bg-emerald-500/30 transition-colors"
                                 onClick={() => setSettingsVisible(false)}
                             >
                                 Done
@@ -356,7 +356,7 @@ const FieldToggle = (props: { label: string; checked: boolean; onChange: () => v
         </span>
         <div
             className={`w-7 h-4 rounded-full transition-colors duration-200 relative ${
-                props.checked ? 'bg-indigo-500' : 'bg-slate-700'
+                props.checked ? 'bg-emerald-500' : 'bg-slate-700'
             }`}
             onClick={props.onChange}
         >
