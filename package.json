@@ -63,7 +63,7 @@
     "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^8.58.0",
     "@typescript-eslint/parser": "^8.58.0",
-    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.55.0",
     "prettier": "^3.1.0",
@@ -76,5 +76,9 @@
     "fast-xml-parser": "^5.5.9",
     "glob": "^10.3.10",
     "path-browserify": "^1.0.1"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.6",
+    "diff": "^8.0.3"
   }
 }
