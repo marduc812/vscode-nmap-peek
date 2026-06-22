@@ -1,74 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { HostType } from '../utilities/types';
-import { filterPort, findOS, generatePortScanInfo, getAddresses, getHostnames, copyToClip } from '../utilities/utils';
+import { findOS, generatePortScanInfo, getAddresses, getHostnames, copyToClip, filterHostByQuery, applyServiceFilter, getServiceNames } from '../utilities/utils';
 import { VscChevronDown } from "react-icons/vsc";
 import PortsView from './PortsView';
 import Search from './Search';
+import ServiceFilters from './ServiceFilters';
 import Tools from './Tools';
 
 const HostsView = (props: { hosts: HostType | HostType[] }) => {
 
   const [allHosts, setAllHosts] = useState<HostType[]>([]);
-  const [filteredHosts, setFilteredHosts] = useState<HostType[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   useEffect(() => {
     const hostsArray = Array.isArray(props.hosts) ? props.hosts : [props.hosts];
     setAllHosts(hostsArray);
-    setFilteredHosts(hostsArray);
   }, [props.hosts]);
 
-  const handleSearch = (searchQuery: string) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    let filter = "";
-    let searchvalue = "";
+  const serviceNames = useMemo(() => getServiceNames(allHosts), [allHosts]);
 
-    if (lowerCaseQuery.includes(":")) {
-      filter = lowerCaseQuery.split(":")[0].trim();
-      searchvalue = lowerCaseQuery.split(":")[1].trim();
-    } else {
-      searchvalue = lowerCaseQuery;
-    }
+  const filteredHosts = useMemo(() => {
+    return allHosts
+      .map((host) => filterHostByQuery(host, searchQuery))
+      .filter((host): host is HostType => host !== null)
+      .map((host) => applyServiceFilter(host, selectedServices))
+      .filter((host): host is HostType => host !== null);
+  }, [allHosts, searchQuery, selectedServices]);
 
-    const filtered = allHosts
-      .map((host) => {
-        let addresses = Array.isArray(host.address) ? host.address : [host.address];
-        const ipMatch = addresses.some((address) => address["@_addr"].toLowerCase().includes(searchvalue));
-        const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
-        const status = host.status["@_state"] === searchvalue;
-
-        if (filter === "pnumber") {
-          const filteredPorts = host.ports?.port?.filter((port) => port["@_portid"] === searchvalue) || [];
-
-          if (filteredPorts.length === 0) {
-            return null;
-          }
-
-          return {
-            ...host,
-            ports: { port: filteredPorts }
-          };
-        }
-
-        if (filter === "host") {
-          return ipMatch || hostnameMatch ? host : null;
-        }
-
-        if (filter === "status") {
-          return status ? host : null;
-        }
-
-        const port = filterPort(host.ports, searchvalue, filter);
-        return ipMatch || hostnameMatch || port || status ? host : null;
-      })
-      .filter((host) => host !== null);
-
-    setFilteredHosts(filtered as HostType[]);
+  const toggleService = (service: string) => {
+    setSelectedServices((prev) =>
+      prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]
+    );
   };
 
+  const clearServices = () => setSelectedServices([]);
 
   return (
     <div className='w-full flex flex-col'>
-      <Search onSearch={handleSearch} />
+      <Search onSearch={setSearchQuery} />
+      <ServiceFilters
+        services={serviceNames}
+        selected={selectedServices}
+        onToggle={toggleService}
+        onClear={clearServices}
+      />
       <Tools filteredHosts={filteredHosts} />
       <div className='px-3 pb-3 space-y-2'>
         {filteredHosts.map((hostItem, index) => (

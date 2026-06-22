@@ -227,6 +227,118 @@ export const getCPE = (scanCPE: string | string[]): string => {
 };
 
 
+/**
+ * Filters a single host against a search query.
+ * Supports the `filter:term` syntax (host, status, pnumber, sname, ...) and a
+ * bare term that matches as a substring across all fields.
+ * @param host - the host to test
+ * @param searchQuery - the raw search query
+ * @returns the host (trimmed to a single port for the `pnumber` filter) or null
+ *          when it does not match. An empty query returns the host unchanged.
+ */
+export const filterHostByQuery = (host: HostType, searchQuery: string): HostType | null => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    let filter = "";
+    let searchvalue = "";
+
+    if (lowerCaseQuery.includes(":")) {
+        filter = lowerCaseQuery.split(":")[0].trim();
+        searchvalue = lowerCaseQuery.split(":")[1].trim();
+    } else {
+        searchvalue = lowerCaseQuery;
+    }
+
+    let addresses = Array.isArray(host.address) ? host.address : [host.address];
+    const ipMatch = addresses.some((address) => address["@_addr"].toLowerCase().includes(searchvalue));
+    const hostnameMatch = getHostnames(host.hostnames).toLowerCase().includes(searchvalue);
+    const status = host.status["@_state"] === searchvalue;
+
+    if (filter === "pnumber") {
+        const portsArray = host.ports?.port
+            ? (Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port])
+            : [];
+        const filteredPorts = portsArray.filter((port) => port["@_portid"] === searchvalue);
+
+        if (filteredPorts.length === 0) {
+            return null;
+        }
+
+        return {
+            ...host,
+            ports: { port: filteredPorts }
+        };
+    }
+
+    if (filter === "host") {
+        return ipMatch || hostnameMatch ? host : null;
+    }
+
+    if (filter === "status") {
+        return status ? host : null;
+    }
+
+    const port = filterPort(host.ports, searchvalue, filter);
+    return ipMatch || hostnameMatch || port || status ? host : null;
+};
+
+/**
+ * Collects the unique service names present across all hosts in the scan.
+ * @param hosts - the list of hosts
+ * @returns sorted, de-duplicated list of service names
+ */
+export const getServiceNames = (hosts: HostType[]): string[] => {
+    const names = new Set<string>();
+
+    hosts.forEach((host) => {
+        if (!host.ports || !host.ports.port) {
+            return;
+        }
+
+        const portsArray = Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port];
+        portsArray.forEach((port) => {
+            const name = port?.service?.['@_name'];
+            if (name) {
+                names.add(name);
+            }
+        });
+    });
+
+    return Array.from(names).sort();
+};
+
+/**
+ * Filters a host down to only the ports whose service matches the selected services.
+ * @param host - the host to filter
+ * @param selectedServices - the active service-chip selection
+ * @returns the host (trimmed to matching ports) or null if nothing matches.
+ *          When no services are selected, the host is returned unchanged.
+ */
+export const applyServiceFilter = (host: HostType, selectedServices: string[]): HostType | null => {
+    if (selectedServices.length === 0) {
+        return host;
+    }
+
+    if (!host.ports || !host.ports.port) {
+        return null;
+    }
+
+    const portsArray = Array.isArray(host.ports.port) ? host.ports.port : [host.ports.port];
+    const matchingPorts = portsArray.filter((port) => {
+        const name = port?.service?.['@_name'];
+        return name ? selectedServices.includes(name) : false;
+    });
+
+    if (matchingPorts.length === 0) {
+        return null;
+    }
+
+    return {
+        ...host,
+        ports: { port: matchingPorts }
+    };
+};
+
+
 export const filterPort = (ports: PortsType, query: string, filter: string): boolean => {
     if (!ports || !ports.port) {
         return false;
