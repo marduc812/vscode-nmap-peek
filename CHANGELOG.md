@@ -70,3 +70,9 @@
 ## [2.1.3] - 02.04.2026
 - Fixed bug with XML-Parser which limited the number of entities
 - Updated outdated dependancies
+
+## [2.1.4] - 22.06.2026
+- Added service filter chips to filter hosts by service
+- Added scan info panel showing the command and scan time
+- Hosts with no open ports now show `Open 0` instead of being hidden
+- Fixed the view drifting vertically based on the number of hosts

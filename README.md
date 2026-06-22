@@ -27,6 +27,11 @@ it is not possible to have multiple instances of the preview at the same time.
 
 ## Release Notes
 
+### 2.1.4
+- Added service filter chips
+- Added scan info panel with the command and scan time
+- Hosts with no open ports now show `Open 0`
+
 ### 2.1.3
 - Fixed bug with XML-Parser which limited the number of entities
 - Updated outdated dependancies
