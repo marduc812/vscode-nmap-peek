@@ -214,10 +214,6 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                         <VscLink className="text-sm" />
                         <span>URLs</span>
                     </div>
-                    <div className={toolBtnClass("hostPort")} onClick={() => handleSelection("hostPort", extractHostPort)}>
-                        <VscSymbolKeyword className="text-sm" />
-                        <span>host:port</span>
-                    </div>
                 </div>
 
                 <div className="w-px h-5 bg-slate-700/30 mx-1" />
@@ -232,6 +228,10 @@ const Tools = (props: { filteredHosts: HostType[] }) => {
                     <div className={toolBtnClass("csv")} onClick={() => handleSelection("csv", exportAsCSV)}>
                         <VscTable className="text-sm" />
                         <span>CSV</span>
+                    </div>
+                    <div className={toolBtnClass("hostPort")} onClick={() => handleSelection("hostPort", extractHostPort)}>
+                        <VscSymbolKeyword className="text-sm" />
+                        <span>host:port</span>
                     </div>
                 </div>
 
